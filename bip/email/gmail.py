@@ -13,32 +13,33 @@ from googleapiclient.discovery import build
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
 
-def credentials(creds_dir='.'):
+def credentials(creds_dir='secrets'):
     """Get credentials for the Gmail API."""
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    print(os.getcwd())
-    if os.path.exists(os.path.join(creds_dir, 'token.json')):
-        creds = Credentials.from_authorized_user_file(os.path.join(creds_dir, 'token.json'), SCOPES)
+    creds_file = os.path.join(creds_dir, 'credentials.json')
+    token_file = os.path.join(creds_dir, 'token.json')
+    if os.path.exists(token_file):
+        creds = Credentials.from_authorized_user_file(token_file, SCOPES)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                os.path.join(creds_dir, 'credentials.json'), SCOPES)
+                creds_file, SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open('../../token.json', 'w') as token:
+        with open(token_file, 'w') as token:
             token.write(creds.to_json())
     return creds
 
 
-def gmail_api_client(cred_dir='.'):
+def gmail_api_client(creds_dir='secrets'):
     """Get the gmail API client."""
-    return build('gmail', 'v1', credentials=credentials(cred_dir))
+    return build('gmail', 'v1', credentials=credentials(creds_dir))
 
 
 def get_header_value(headers, name):
@@ -133,7 +134,7 @@ if __name__ == '__main__':
     print('Test')
     # list messages' subjects from messages after march 29, 2023 at 9
     retrieval_date = datetime.datetime(2023, 3, 28, 9, 0, 0)
-    messages = get_last_emails(gmail_api_client('../..'), retrieval_date)
+    messages = get_last_emails(gmail_api_client('../../secrets'), retrieval_date)
     for message in messages:
         print(message['snippet'])
 
