@@ -1,21 +1,14 @@
 from googleapiclient.discovery import build
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.vectorstores import Chroma
-
 from bip.email.gmail import get_message_text_from_payload, get_header_value, \
     get_last_threads, credentials
 
-embeddings = OpenAIEmbeddings()
-docsearch = Chroma("langchain_store", embeddings)
 
-
-def _create_chunk_metadata(chunk, message, thread_id):
+def _create_chunk_metadata(chunk, message):
     """Create metadata for the chunk, with the id of the thread, id of the
     message, date of the message, and chunk position
 
     :param chunk: the chunk
     :param message: the message
-    :param thread_id: the thread id
     :return: the metadata
     """
     subject = get_header_value(message['payload']['headers'], 'Subject')
@@ -24,7 +17,7 @@ def _create_chunk_metadata(chunk, message, thread_id):
         'subject': subject,
         'message_id': message['id'],
         'date': date,
-        'thread_id': thread_id,
+        'thread_id': message['threadId'],
         'source': message['snippet'],
     }
     return metadata
@@ -65,11 +58,15 @@ def _create_chunks(message, chunk_size=2000):
     return chunks
 
 
-def _store_message(message, thread_id):
-    """Store the message in the chroma database.
+def cut_message(message):
+    """
+    Cut the message in chunks, enrich them, create the metadata for each
+    chunk and return the outcome
 
-    Cut the message in chunks, enrich them, create the metadata for each chunk
-    and store them in the chroma database.
+    Documentation on Message object: https://developers.google.com/gmail/api/v1/reference/users/messages
+
+    :param message: the message to cut
+    :return: the enriched chunks and the chunks metadatas
     """
     # compute chunks
     chunks = _create_chunks(message)
@@ -79,26 +76,15 @@ def _store_message(message, thread_id):
 
     # compute enriched chunks
     def enrich_chunk(c,i):
-        _enrich_chunk(c, message, i, len(chunks))
+        return _enrich_chunk(c, message, i, len(chunks))
     enriched_chunks = list(map(enrich_chunk, chunks, range(1, len(chunks)+1)))
 
     # compute chunks metadatas
     def chunk_metadata(chunk):
-        _create_chunk_metadata(chunk, message, thread_id)
+        return _create_chunk_metadata(chunk, message)
     chunks_metadatas = list(map(chunk_metadata, enriched_chunks))
 
-    # store in chroma database
-    docsearch.add_texts(enriched_chunks, chunks_metadatas)
-    print("Message stored in chroma database")
-
-
-def store_in_chroma_db(thread):
-    """Store the thread in the chroma database.
-
-    :param thread: the thread to store
-    """
-    for message in thread['messages']:
-        _store_message(message, thread['id'])
+    return enriched_chunks, chunks_metadatas
 
 
 def test_chunks():
@@ -106,15 +92,7 @@ def test_chunks():
 
     # Get last threads from gmail, store their content in a chroma database
     for thread in get_last_threads(gmail_api_client, 3):
-        chunks = _create_chunks(thread['messages'][0])
-        enriched_chunks = list(map(lambda chunk, index: _enrich_chunk(chunk,
-                                                                  thread['messages'][0],
-                                                                 index, len(chunks)),
-                              chunks, range(1, len(chunks)+1)))
-        chunks_metadatas = list(map(lambda chunk: _create_chunk_metadata(chunk,
-                                                                     thread[
-                                                                         'messages'][0], thread['id']), enriched_chunks))
-        print("Chunks:" + str(len(chunks)))
+        enriched_chunks, chunks_metadatas = cut_message(thread['messages'][0])
         print("Enriched chunks:" + str(len(enriched_chunks)))
         print("Chunks metadatas:" + str(len(chunks_metadatas)))
         for chunk, metadata in zip(enriched_chunks, chunks_metadatas):
@@ -122,5 +100,6 @@ def test_chunks():
             print(metadata)
             print("")
 
+
 if __name__ == '__main__':
-    [1, 2, 3]._t(print)
+    test_chunks()
