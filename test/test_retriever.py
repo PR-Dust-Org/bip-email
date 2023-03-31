@@ -1,36 +1,41 @@
 import unittest
-from datetime import datetime
+import datetime
 from bip.email import retriever
 
 
 class MyTestCase(unittest.TestCase):
-    def test_something(self):
-        # retrieve mails between 2023-03-28 and 2023-03-30
-        test_retriever = retriever.Retriever()
+    def retrieve_emails(self, test_retriever):
         test_retriever._index.delete(delete_all=True)
         test_retriever.update_email_index(
-            start_date=datetime.datetime(2023, 3, 28, 0, 0, 0),
-            end_date=datetime.datetime(2023, 3, 30, 0, 0, 0))
+            datetime.datetime(2023, 3, 28, 0, 0, 0),
+            datetime.datetime(2023, 3, 30, 0, 0, 0))
 
+    def test_something(self):
+        # retrieve mails between 2023-03-28 and 2023-03-30
+        test_retriever = retriever.Retriever('test', '../secrets')
+        # self.retrieve_emails(test_retriever)
         # Message id test
         result = test_retriever._index.fetch(
-            ids=["specific_id_in_index"],
+            ids=["1872c13dd549e130-1"],
             namespace="test")
         self.assertEqual(
-            result['vectors']['specific_id_in_index']['meta']['subject'],
-            'Subject 1')
+            result['vectors']['1872c13dd549e130-1']['metadata']['subject'],
+            'Ton soutien peut faire la différence')
 
         # semantic search test
-        query = test_retriever._embeddings.embed_query(text="Comment ça va?")
+        query = test_retriever._embeddings.embed_query(
+            text="Entreprise de bijoux")
         result = test_retriever._index.query(
             top_k=3,
             vector=query,
-            namespace="test")
+            includeValues=False,
+            includeMetadata=True,
+            namespace="test").get('matches')
 
         # for each result, assert the value of the subject
-        self.assertEqual(result[0].meta['subject'], 'Subject 1')
-        self.assertEqual(result[1].meta['subject'], 'Subject 2')
-        self.assertEqual(result[2].meta['subject'], 'Subject 3')
+        self.assertEqual(result[0].metadata['subject'], 'Gens de Confiance vous présente « Ce jour où... » avec Gemmyo')
+        self.assertEqual(result[1].metadata['subject'], 'Gens de Confiance vous présente « Ce jour où... » avec Gemmyo')
+        self.assertEqual(result[2].metadata['subject'], 'De nouveaux biens de prestige pour votre recherche')
 
 
 if __name__ == '__main__':

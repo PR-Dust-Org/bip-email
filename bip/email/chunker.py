@@ -1,9 +1,11 @@
+import logging
+
 from googleapiclient.discovery import build
 from bip.email.gmail import get_message_text_from_payload, get_header_value, \
     get_last_threads, credentials
 
 
-def _create_chunk_metadata(chunk, message):
+def _create_chunk_metadata(chunk, message, chunk_index):
     """Create metadata for the chunk, with the id of the thread, id of the
     message, date of the message, and chunk position
 
@@ -17,6 +19,7 @@ def _create_chunk_metadata(chunk, message):
         'subject': subject,
         'message_id': message['id'],
         'date': date,
+        'chunk_index': chunk_index,
         'thread_id': message['threadId'],
         'source': message['snippet'],
     }
@@ -71,8 +74,8 @@ def cut_message(message):
     # compute chunks
     chunks = _create_chunks(message)
     if not chunks:
-        print("Warning: empty message")
-        return
+        logging.warning("Empty message")
+        return [], []
 
     # compute enriched chunks
     def enrich_chunk(c,i):
@@ -80,11 +83,22 @@ def cut_message(message):
     enriched_chunks = list(map(enrich_chunk, chunks, range(1, len(chunks)+1)))
 
     # compute chunks metadatas
-    def chunk_metadata(chunk):
-        return _create_chunk_metadata(chunk, message)
-    chunks_metadatas = list(map(chunk_metadata, enriched_chunks))
+    def chunk_metadata(chunk, index):
+        return _create_chunk_metadata(chunk, message, index)
+    chunks_metadatas = list(map(chunk_metadata, enriched_chunks, range(1, len(chunks)+1)))
 
     return enriched_chunks, chunks_metadatas
+
+
+def chunk_id(message, chunk_index):
+    """
+    Compute the chunk id from the message id and the chunk index
+
+    :param message: the message
+    :param chunk_index: the chunk index
+    :return: the chunk id
+    """
+    return f"{message['id']}-{chunk_index}"
 
 
 def test_chunks():

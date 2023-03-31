@@ -81,12 +81,14 @@ def get_last_threads(gmail_api_client, number_of_threads):
     Doc: https://developers.google.com/gmail/api/v1/reference/users/threads/
     """
     try:
-        response = gmail_api_client.users().threads().list(userId='me', maxResults=number_of_threads).execute()
+        response = gmail_api_client.users().threads().list(userId='me',
+                                                           maxResults=number_of_threads).execute()
         threads = response['threads']
         result = []
         for thread in threads:
             thread_id = thread['id']
-            thread = gmail_api_client.users().threads().get(userId='me', id=thread_id).execute()
+            thread = gmail_api_client.users().threads().get(userId='me',
+                                                            id=thread_id).execute()
             result.append(thread)
         return result
     except HttpError as error:
@@ -132,9 +134,39 @@ def test_gmail_api():
 
 if __name__ == '__main__':
     print('Test')
-    # list messages' subjects from messages after march 29, 2023 at 9
+    # list messages' subjects from messages after March 29, 2023 at 9
     retrieval_date = datetime.datetime(2023, 3, 28, 9, 0, 0)
-    messages = get_last_emails(gmail_api_client('../../secrets'), retrieval_date)
+    messages = get_last_emails(gmail_api_client('../../secrets'),
+                               retrieval_date)
     for message in messages:
         print(message['snippet'])
 
+
+def email_batches(gmail_client, start_date, end_date, batch_size=100):
+    """Get the emails between two dates and return them in batches via a generator.
+
+    :param gmail_client: the gmail API client
+    :param start_date: the start date
+    :param end_date: the end date
+    :param batch_size: the batch size
+    """
+    # format start_date and end_date as YYYY/MM/DD
+    start_date = start_date.strftime('%Y/%m/%d')
+    end_date = end_date.strftime('%Y/%m/%d')
+
+    # get the first batch of emails
+    response = (gmail_client.users().messages()
+                .list(userId='me', q=f"after:{start_date} before:{end_date}")
+                .execute())
+    while True:
+        message_heads = response['messages']
+        for i in range(0, len(message_heads), batch_size):
+            yield list(map(lambda x: _get_message(gmail_client, x),
+                           message_heads[i:i + batch_size]))
+        if 'nextPageToken' not in response:
+            break
+        response = (gmail_client.users().messages()
+                    .list(userId='me',
+                          q=f"after:{start_date} before:{end_date}",
+                          pageToken=response['nextPageToken'])
+                    .execute())
