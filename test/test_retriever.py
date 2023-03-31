@@ -12,9 +12,20 @@ class MyTestCase(unittest.TestCase):
             start_date=datetime.datetime(2023, 3, 28, 0, 0, 0),
             end_date=datetime.datetime(2023, 3, 30, 0, 0, 0))
 
-        # query the index
+        # Message id test
+        result = test_retriever._index.fetch(
+            ids=["specific_id_in_index"],
+            namespace="test")
+        self.assertEqual(
+            result['vectors']['specific_id_in_index']['meta']['subject'],
+            'Subject 1')
+
+        # semantic search test
         query = test_retriever._embeddings.embed_query(text="Comment ça va?")
-        result = test_retriever._index.query(top_k=3, vector=query)
+        result = test_retriever._index.query(
+            top_k=3,
+            vector=query,
+            namespace="test")
 
         # for each result, assert the value of the subject
         self.assertEqual(result[0].meta['subject'], 'Subject 1')
