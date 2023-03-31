@@ -2,17 +2,10 @@
 import pinecone
 from langchain.embeddings import OpenAIEmbeddings
 
-
-# Get Pinecone API key from secrets/pinecone-key.txt
-def get_pinecone_key():
-    with open('../secrets/pinecone-key.txt') as f:
-        return f.read().strip()
-
-
-PINECONE_KEY = get_pinecone_key()
+from bip.email import retriever
 
 # Connect to pinecone
-pinecone.init(api_key=PINECONE_KEY, environment="eu-west1-gcp")
+pinecone.init(api_key=retriever.get_pinecone_key(), environment="eu-west1-gcp")
 
 # get 2 embeddings
 embeddings = OpenAIEmbeddings()
@@ -22,7 +15,8 @@ elt2 = embeddings.embed_query(text="Il est très en retard")
 # Insert some data
 index = pinecone.Index("bip-email")
 index.upsert(vectors=[("elt0", [0.1]*1536)])
-index.upsert(vectors=[("elt1", elt1), ("elt2", elt2)])
+index.upsert(vectors=[("elt1", elt1, { "m_id": "wow"}),
+                      ("elt2", elt2, { "m_id": "wow2"})])
 
 # Check it works
 query1 = embeddings.embed_query(text="Une personne de mon équipe")
