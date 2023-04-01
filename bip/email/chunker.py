@@ -21,7 +21,8 @@ def _create_chunk_metadata(chunk, message, chunk_index):
         'date': date,
         'chunk_index': chunk_index,
         'thread_id': message['threadId'],
-        'source': message['snippet'],
+        'source': subject,
+        'text': message['snippet'],
     }
     return metadata
 
@@ -48,7 +49,7 @@ def _enrich_chunk(chunk, message, index, total):
     return enriched_chunk
 
 
-def _create_chunks(message, chunk_size=2000):
+def _create_chunks(message, chunk_size=5000):
     """Create chunks from the message.
 
     :param message: the message to chunk
