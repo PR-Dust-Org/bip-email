@@ -4,3 +4,4 @@ openai
 chromadb
 pinecone-client
 google-auth-oauthlib
+tiktoken
