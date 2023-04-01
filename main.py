@@ -1,21 +1,32 @@
 # Main bip-email code
+import logging
 import sys
+import pinecone
 
-from langchain import OpenAI
+from langchain import vectorstores
+from langchain.chat_models import ChatOpenAI
 from langchain.chains import RetrievalQAWithSourcesChain
+from langchain.embeddings import OpenAIEmbeddings
 
-from bip.email.gmail import get_last_threads, gmail_api_client
-from bip.email.store import store_in_chroma_db, docsearch
+from bip.email import retriever
 
 if __name__ == '__main__':
-    # get user's query from command line
-    # query = sys.argv[1]
-    query = "Quels nouveaux appartements me sont proposés?"
-    # store the last 10 threads from Gmail in chroma
-    for thread in get_last_threads(gmail_api_client("../.."), 10):
-        store_in_chroma_db(thread)
+    query = sys.argv[1]
+
+    logging.info("Starting Pinecone")
+    pinecone.init(
+        api_key=retriever.get_pinecone_key(),
+        environment="eu-west1-gcp")
+    index = pinecone.Index("bip-email")
+    embeddings = OpenAIEmbeddings()
+    docsearch = vectorstores.Pinecone(
+        index, embeddings.embed_query, "text", "test")
+
+    logging.info("Starting chain")
     chain = RetrievalQAWithSourcesChain.from_chain_type(
-        OpenAI(temperature=0, model_name="gpt-4"),
-        chain_type="stuff",
+        ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo"),
+        chain_type="map_reduce",
         retriever=docsearch.as_retriever())
+
+    logging.info("Running chain")
     print(chain(query))

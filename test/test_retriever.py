@@ -1,6 +1,6 @@
-import os
-import unittest
 import datetime
+import unittest
+
 from bip.email import retriever
 
 
