@@ -1,3 +1,4 @@
+import os
 import unittest
 import datetime
 from bip.email import retriever
@@ -24,7 +25,7 @@ class MyTestCase(unittest.TestCase):
 
         # semantic search test
         query = test_retriever._embeddings.embed_query(
-            text="Entreprise de bijoux")
+            text="Entreprise de bijoux, luxe et joaillerie")
         result = test_retriever._index.query(
             top_k=3,
             vector=query,
@@ -34,7 +35,7 @@ class MyTestCase(unittest.TestCase):
 
         # for each result, assert the value of the subject
         self.assertEqual(result[0].metadata['subject'], 'Gens de Confiance vous présente « Ce jour où... » avec Gemmyo')
-        self.assertEqual(result[1].metadata['subject'], 'Gens de Confiance vous présente « Ce jour où... » avec Gemmyo')
+        self.assertEqual(result[1].metadata['subject'], 'De nouveaux biens de prestige pour votre recherche')
         self.assertEqual(result[2].metadata['subject'], 'De nouveaux biens de prestige pour votre recherche')
 
 

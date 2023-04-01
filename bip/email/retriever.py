@@ -1,6 +1,8 @@
 # This module retrieves emails from a gmail account and stores them in a
 # vector store
 import logging
+import os.path
+
 import pinecone
 
 from langchain.embeddings import OpenAIEmbeddings
@@ -9,19 +11,20 @@ from bip.email import gmail, chunker
 logging.basicConfig(level=logging.INFO)
 
 
-def get_pinecone_key():
+def get_pinecone_key(key_dir='secrets'):
     """Get Pinecone API key from secrets/pinecone-key.txt"""
-    with open('../secrets/pinecone-key.txt') as f:
+    with open(os.path.join(key_dir,'pinecone-key.txt')) as f:
         return f.read().strip()
 
 
-class Retriever():
+class Retriever(object):
     UPSERT_BATCH_SIZE = 100
 
     def __init__(self, namespace=None, creds_dir='secrets'):
         self._namespace = namespace
         self._gmail_client = gmail.gmail_api_client(creds_dir)
-        pinecone.init(api_key=get_pinecone_key(), environment="eu-west1-gcp")
+        pinecone.init(api_key=get_pinecone_key(creds_dir),
+                      environment="eu-west1-gcp")
         self._index = pinecone.Index("bip-email")
         self._embeddings = OpenAIEmbeddings()
         logging.info("Retriever initialized")
