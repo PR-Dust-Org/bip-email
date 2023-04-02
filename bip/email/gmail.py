@@ -146,11 +146,10 @@ def email_batches(gmail_client, start_date, end_date, batch_size=100):
     """Get the emails between two dates and return them in batches via a generator.
 
     :param gmail_client: the gmail API client
-    :param start_date: the start date
-    :param end_date: the end date
+    :param start_date: the start date, inclusive
+    :param end_date: the end date, exclusive
     :param batch_size: the batch size
     """
-    # format start_date and end_date as YYYY/MM/DD
     start_date = start_date.strftime('%Y/%m/%d')
     end_date = end_date.strftime('%Y/%m/%d')
 
