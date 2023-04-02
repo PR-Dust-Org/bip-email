@@ -57,8 +57,10 @@ def _create_chunks(message, chunk_size=5000):
     """
     message_text = get_message_text_from_payload(message['payload'])
     chunks = []
-    for i in range(0, len(message_text), chunk_size):
-        chunks.append(message_text[i:i + chunk_size])
+    chunk_overlap = int(chunk_size / 20)
+    chunk_step = chunk_size - chunk_overlap
+    for i in range(0, len(message_text), chunk_step):
+        chunks.append(message_text[i:i + chunk_step])
     return chunks
 
 
