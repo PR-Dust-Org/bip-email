@@ -1,7 +1,9 @@
 # This module retrieves emails from a gmail account and stores them in a
 # vector store
+from datetime import datetime
 import logging
 import os.path
+import sys
 
 import pinecone
 
@@ -45,28 +47,50 @@ class Retriever(object):
         return (self._index.fetch(ids=[first_chunk_id])['vectors']
                 and self._index.fetch(ids=[last_chunk_id])['vectors'])
 
-    def _store_email_batch(self, email_batch, batch_index):
-        """Store an email batch in the index"""
-        # cut messages into chunks and store them in a list
-        logging.info(f"Storing batch {batch_index}")
+    def _store_chunks(self, chunks):
+        for i in range(0, len(chunks), self.UPSERT_BATCH_SIZE):
+            logging.info(
+                f"Upserting chunks {i} to {i + self.UPSERT_BATCH_SIZE}")
+            self._index.upsert(vectors=chunks[i:i + self.UPSERT_BATCH_SIZE],
+                               namespace=self._namespace)
+
+    def _cut_messages(self, email_batch):
+        """Cut messages into chunks and embed them"""
         chunks = []
-        for message in email_batch:
+        for i, message in enumerate(email_batch):
+            if i % 10 == 0:
+                logging.info(f"Cutting message {i} of {len(email_batch)}")
             enriched_chunks, metadatas = chunker.cut_message(message)
             chunk_vectors = self._embeddings.embed_documents(enriched_chunks)
             for cv, m in zip(chunk_vectors, metadatas):
                 chunk_id = chunker.chunk_id(message, m['chunk_index'])
                 chunks.append((chunk_id, cv, m))
+        return chunks
 
-        # store chunks in the index in batches
-        for i in range(0, len(chunks), self.UPSERT_BATCH_SIZE):
-            self._index.upsert(vectors=chunks[i:i+self.UPSERT_BATCH_SIZE],
-                               namespace=self._namespace)
+    def _log_batch_date(self, email_batch):
+        """Log the date of the first message in the batch"""
+        first_message_ts = int(email_batch[0]['internalDate']) / 1000
+        batch_date = (datetime.fromtimestamp(first_message_ts)
+                      .strftime("%Y-%m-%d %H:%M"))
+        logging.info(f"Storing new batch starting from date {batch_date}")
+
+    def _store_email_batch(self, email_batch):
+        """Store an email batch in the index"""
+        self._log_batch_date(email_batch)
+        chunks = self._cut_messages(email_batch)
+        self._store_chunks(chunks)
 
     def update_email_index(self, start_date, end_date):
         """Update the email index with emails between start_date and end_date"""
         logging.info(f"Updating email index with emails between {start_date} and {end_date}")
         batches = gmail.email_batches(self._gmail_client, start_date, end_date)
-        for i, email_batch in enumerate(batches):
+        for email_batch in batches:
             if not(self._already_fully_stored(email_batch)):
-                self._store_email_batch(email_batch, i)
+                self._store_email_batch(email_batch)
 
+
+if __name__ == '__main__':
+    retriever = Retriever()
+    script_start_date = datetime.strptime(sys.argv[1], "%Y-%m-%d")
+    script_end_date = datetime.strptime(sys.argv[2], "%Y-%m-%d")
+    retriever.update_email_index(script_start_date, script_end_date)
