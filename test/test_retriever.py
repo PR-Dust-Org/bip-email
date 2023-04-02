@@ -11,13 +11,13 @@ class MyTestCase(unittest.TestCase):
             datetime.datetime(2023, 3, 28, 0, 0, 0),
             datetime.datetime(2023, 3, 30, 0, 0, 0))
 
-    def test_something(self):
+    def test_retrieval(self):
         # retrieve mails between 2023-03-28 and 2023-03-30
         test_retriever = retriever.Retriever('test', '../secrets')
-        # self.retrieve_emails(test_retriever)
+        self.retrieve_emails(test_retriever)
         # Message id test
         result = test_retriever._index.fetch(
-            ids=["1872c13dd549e130-1"],
+            ids=["1872c13dd549e130-0"],
             namespace="test")
         self.assertEqual(
             result['vectors']['1872c13dd549e130-1']['metadata']['subject'],

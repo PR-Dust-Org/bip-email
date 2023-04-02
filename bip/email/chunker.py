@@ -43,7 +43,7 @@ def _enrich_chunk(chunk, message, index, total):
                      f"From: {sender}\n" \
                      f"To: {recipients}\n" \
                      f"Date: {date}\n" \
-                     f"Message part {index} of {total}\n" \
+                     f"Message part {index+1} of {total}\n" \
                      f"*******************\n\n" \
                      f"{chunk}"
     return enriched_chunk
@@ -81,12 +81,12 @@ def cut_message(message):
     # compute enriched chunks
     def enrich_chunk(c,i):
         return _enrich_chunk(c, message, i, len(chunks))
-    enriched_chunks = list(map(enrich_chunk, chunks, range(1, len(chunks)+1)))
+    enriched_chunks = list(map(enrich_chunk, chunks, range(len(chunks))))
 
     # compute chunks metadatas
     def chunk_metadata(chunk, index):
         return _create_chunk_metadata(chunk, message, index)
-    chunks_metadatas = list(map(chunk_metadata, enriched_chunks, range(1, len(chunks)+1)))
+    chunks_metadatas = list(map(chunk_metadata, enriched_chunks, range(len(chunks))))
 
     return enriched_chunks, chunks_metadatas
 
