@@ -22,7 +22,7 @@ def _create_chunk_metadata(chunk, message, chunk_index):
         'chunk_index': chunk_index,
         'thread_id': message['threadId'],
         'source': subject,
-        'text': message['snippet'],
+        'text': chunk,
     }
     return metadata
 
