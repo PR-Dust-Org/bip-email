@@ -14,11 +14,11 @@ def _create_chunk_metadata(chunk, message, chunk_index):
     :return: the metadata
     """
     subject = get_header_value(message['payload']['headers'], 'Subject')
-    date = get_header_value(message['payload']['headers'], 'Date')
+    date = message['internalDate']
     metadata = {
         'subject': subject,
         'message_id': message['id'],
-        'date': date,
+        'date': date if date else "No date",
         'chunk_index': chunk_index,
         'thread_id': message['threadId'],
         'source': subject,
