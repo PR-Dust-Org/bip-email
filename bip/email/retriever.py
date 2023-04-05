@@ -10,8 +10,6 @@ import pinecone
 from langchain.embeddings import OpenAIEmbeddings
 from bip.email import gmail, chunker
 
-logging.basicConfig(level=logging.INFO)
-
 
 def get_secret_key(key_name, key_dir='secrets'):
     """Get API key from secrets/{key_name}-key.txt"""
@@ -51,6 +49,7 @@ class Retriever(object):
         for i in range(0, len(chunks), self.UPSERT_BATCH_SIZE):
             logging.info(
                 f"Upserting chunks {i} to {i + self.UPSERT_BATCH_SIZE}")
+            logging.debug(f"Chunks: {chunks[i:i + self.UPSERT_BATCH_SIZE]}")
             self._index.upsert(vectors=chunks[i:i + self.UPSERT_BATCH_SIZE],
                                namespace=self._namespace)
 

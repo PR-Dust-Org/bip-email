@@ -20,6 +20,12 @@ DUST_BODY = {"specification_hash": "0b22d94003fabffa4784106518abeb905cf5936f2c4d
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Bip Email')
+    # add verbose argument
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        action='store_true',
+        help='Print debug messages')
 
     # Create subparsers
     subparsers = parser.add_subparsers(dest='subcommand', help='Subcommands')
@@ -112,6 +118,10 @@ def query_emails(question):
 
 if __name__ == '__main__':
     args = parse_arguments()
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
     if args.subcommand == 'retrieve':
         retrieve_emails(args.start_date, args.end_date, args.clear_vs)
     elif args.subcommand == 'query':
