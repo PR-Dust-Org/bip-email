@@ -80,6 +80,10 @@ class Retriever(object):
         chunks = self._cut_messages(email_batch)
         self._store_chunks(chunks)
 
+    def delete_all_emails(self):
+        """Delete all emails from the index"""
+        self._index.delete(delete_all=True, namespace=self._namespace)
+
     def update_email_index(self, start_date, end_date):
         """Update the email index with emails between start_date and end_date"""
         logging.info(f"Updating email index with emails between {start_date} and {end_date}")
@@ -87,6 +91,12 @@ class Retriever(object):
         for email_batch in batches:
             if not(self._already_fully_stored(email_batch)):
                 self._store_email_batch(email_batch)
+
+    def query(self, query, **kwargs):
+        """Query the index"""
+        return self._index.query(
+            vector=self._embeddings.embed_query(query),
+            **kwargs)
 
 
 if __name__ == '__main__':
