@@ -5,3 +5,4 @@ chromadb
 pinecone-client
 google-auth-oauthlib
 tiktoken
+html2text

@@ -1,6 +1,7 @@
 # Module handling the connection with the gmail API
 import datetime
 
+import html2text
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -55,11 +56,14 @@ def get_message_text_from_payload(message_part):
     body = message_part['body']
     result = u''
     if 'data' in body:
-        result += base64.urlsafe_b64decode(body['data']).decode('utf-8')
+        raw_data = base64.urlsafe_b64decode(body['data']).decode('utf-8')
+        if message_part['mimeType'] == 'text/html':
+            result = html2text.html2text(raw_data)
+        elif message_part['mimeType'] == 'text/plain':
+            result = raw_data
     parts = message_part.get('parts', [])
     for part in parts:
-        if part['mimeType'] in ['text/plain']:
-            result += get_message_text_from_payload(part)
+        result += get_message_text_from_payload(part)
     return result
 
 
