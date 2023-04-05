@@ -13,9 +13,9 @@ from bip.email import gmail, chunker
 logging.basicConfig(level=logging.INFO)
 
 
-def get_pinecone_key(key_dir='secrets'):
-    """Get Pinecone API key from secrets/pinecone-key.txt"""
-    with open(os.path.join(key_dir,'pinecone-key.txt')) as f:
+def get_secret_key(key_name, key_dir='secrets'):
+    """Get API key from secrets/{key_name}-key.txt"""
+    with open(os.path.join(key_dir,f"{key_name}-key.txt")) as f:
         return f.read().strip()
 
 
@@ -25,7 +25,7 @@ class Retriever(object):
     def __init__(self, namespace=None, creds_dir='secrets'):
         self._namespace = namespace
         self._gmail_client = gmail.gmail_api_client(creds_dir)
-        pinecone.init(api_key=get_pinecone_key(creds_dir),
+        pinecone.init(api_key=get_secret_key("pinecone", creds_dir),
                       environment="eu-west1-gcp")
         self._index = pinecone.Index("bip-email")
         self._embeddings = OpenAIEmbeddings()
