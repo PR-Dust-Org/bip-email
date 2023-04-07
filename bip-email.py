@@ -1,19 +1,24 @@
 # Main bip-email script
 # subcommands: retrieve, query, gen-test-data
 import argparse
+import json
 import logging
+import requests
+
 from datetime import datetime
 
 from bip.email.retriever import Retriever, get_secret_key
 
-DUST_BODY = {"specification_hash": "0b22d94003fabffa4784106518abeb905cf5936f2c4d08cf76c8ba81c622e703",
+DUST_BODY = {"specification_hash":
+                 "b848cd1f503df1b9163c34cae46a13cb7d8ce2d8e5fe2f7082d27fb859e865e5",
              "config": {"INTENT_QUESTION":{"provider_id":"openai",
                                            "model_id":"gpt-3.5-turbo",
                                            "use_cache":True},
                         "MODEL_1": {"provider_id":"openai",
                                    "model_id":"gpt-3.5-turbo",
                                    "use_cache":True},
-                        "MODEL": {"provider_id":"openai","model_id":"gpt-4",
+                        "MODEL": {"provider_id":"openai",
+                                  "model_id":"gpt-3.5-turbo",
                                   "use_cache": True}},
                    "blocking": True}
 
@@ -62,6 +67,16 @@ def parse_arguments():
         'question',
         help='Question to ask to your emails')
 
+    # Create parser for the "batch-query" subcommand
+    parser_batch_query = subparsers.add_parser(
+        'batch-query',
+        help='Ask a list of questions to your emails and get the answers')
+    # Add argument to the "batch-query" subcommand: question-list
+    parser_batch_query.add_argument(
+        'question_list',
+        help='Path to the file containing the list of questions to ask, '
+             'in JSONL format {"question": "question text"}')
+
     # Create parser for the "gen-test-data" subcommand
     parser_gen_test_data = subparsers.add_parser(
         'gen-test-data',
@@ -73,58 +88,69 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def _get_relevant_email_chunks(retriever, question):
-    result = (retriever
-              .query(question, top_k=5, include_metadata=True)
-              .get('matches'))
-    return [result['metadata']['text'] for result in result]
+class BipCLI(object):
 
+    def __init__(self):
+        self._retriever = Retriever()
 
-def retrieve_emails(start_date, end_date, clear_vs):
-    retriever = Retriever()
-    if clear_vs:
-        retriever.delete_all_emails()
-    retriever.update_email_index(start_date, end_date)
-    logging.info('Done!')
+    def _get_relevant_email_chunks(self, question):
+        result = (self._retriever
+                  .query(question, top_k=4, include_metadata=True)
+                  .get('matches'))
+        return [result['metadata']['text'] for result in result]
 
+    def retrieve_emails(self, start_date, end_date, clear_vs):
+        if clear_vs:
+            self._retriever.delete_all_emails()
+        self._retriever.update_email_index(start_date, end_date)
+        logging.info('Done!')
 
-def _call_dust_api(dust_input):
-    import requests
-    import json
-    dust_key = get_secret_key("dust")
-    url = 'https://dust.tt/api/v1/apps/philipperolet/a2cf4c7458/runs'
-    headers = {'Content-Type': 'application/json',
-               'Authorization': f'Bearer {dust_key}'}
-    # create new dict from DUST_BODY and dust_input
-    body = {**DUST_BODY, 'inputs': [dust_input]}
-    response = requests.post(url, data=json.dumps(body), headers=headers)
-    # return the parsed json
-    return response.json()
+    @staticmethod
+    def _call_dust_api(dust_input):
+        dust_key = get_secret_key("dust")
+        url = 'https://dust.tt/api/v1/apps/philipperolet/a2cf4c7458/runs'
+        headers = {'Content-Type': 'application/json',
+                   'Authorization': f'Bearer {dust_key}'}
+        # create new dict from DUST_BODY and dust_input
+        body = {**DUST_BODY, 'inputs': [dust_input]}
+        response = requests.post(url, data=json.dumps(body), headers=headers)
+        # return the parsed json
+        return response.json()
 
+    @staticmethod
+    def _compute_answer(question, relevant_email_chunks):
+        dust_input = {
+            'texts': relevant_email_chunks,
+            'query': question}
+        result = BipCLI._call_dust_api(dust_input)
+        return result['run']['results'][0][0]['value']['completion']['text']
 
-def _compute_answer(question, relevant_email_chunks):
-    dust_input = {
-        'texts': relevant_email_chunks,
-        'query': question}
-    result = _call_dust_api(dust_input)
-    return result['run']['results'][0][0]['value']['completion']['text']
+    def _ask_emails(self, question):
+        relevant_email_chunks = self._get_relevant_email_chunks(question)
+        return self._compute_answer(question, relevant_email_chunks)
 
+    def query_emails(self, question):
+        print(self._ask_emails(question))
 
-def query_emails(question):
-    retriever = Retriever()
-    relevant_email_chunks = _get_relevant_email_chunks(retriever, question)
-    print(_compute_answer(question, relevant_email_chunks))
+    def batch_query_emails(self, question_list):
+        with open(question_list, 'r') as f:
+            questions = [json.loads(line)['question'] for line in f]
+        for question in questions:
+            print(self._ask_emails(question))
 
 
 if __name__ == '__main__':
     args = parse_arguments()
+    bipCli = BipCLI()
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
     if args.subcommand == 'retrieve':
-        retrieve_emails(args.start_date, args.end_date, args.clear_vs)
+        bipCli.retrieve_emails(args.start_date, args.end_date, args.clear_vs)
     elif args.subcommand == 'query':
-        query_emails(args.question)
+        bipCli.query_emails(args.question)
+    elif args.subcommand == 'batch-query':
+        bipCli.batch_query_emails(args.question_list)
     elif args.subcommand == 'gen-test-data':
         print('Not implemented yet!')
