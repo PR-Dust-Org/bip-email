@@ -10,7 +10,7 @@ from datetime import datetime
 from bip.email.retriever import Retriever, get_secret_key
 
 DUST_BODY = {"specification_hash":
-                 "b848cd1f503df1b9163c34cae46a13cb7d8ce2d8e5fe2f7082d27fb859e865e5",
+                 "92984a32d997bc751f225948085a50fe48f2ebf94db069f66c00fb1ea50ab03d",
              "config": {"INTENT_QUESTION":{"provider_id":"openai",
                                            "model_id":"gpt-3.5-turbo",
                                            "use_cache":True},
@@ -136,7 +136,15 @@ class BipCLI(object):
         with open(question_list, 'r') as f:
             questions = [json.loads(line)['question'] for line in f]
         for question in questions:
-            print(self._ask_emails(question))
+            print(self._ask_emails(question) + '\n---\n')
+
+    def gen_test_data(self, query_list):
+        with open(query_list, 'r') as f:
+            queries = [json.loads(line)['question'] for line in f]
+        for query in queries:
+            relevant_email_chunks = self._get_relevant_email_chunks(query)
+            query_and_texts = { 'query': query, 'texts': relevant_email_chunks }
+            print(json.dumps(query_and_texts))
 
 
 if __name__ == '__main__':
@@ -153,4 +161,4 @@ if __name__ == '__main__':
     elif args.subcommand == 'batch-query':
         bipCli.batch_query_emails(args.question_list)
     elif args.subcommand == 'gen-test-data':
-        print('Not implemented yet!')
+        bipCli.gen_test_data(args.query_list)
