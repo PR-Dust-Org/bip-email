@@ -13,9 +13,16 @@
   - qui prompt gpt4 en map-reduce
   - puis fédère les résultats
 - Fais marcher les 3 autres
-  -
-- Sur une DB d'emails de 6 mois
-  - 
+  - Debug montrant temps de la query
+  - debug montrant sujet/date/similarité de chaque chunk retenu
+  - cas uber
+	- déterminer la valeur de similarité recherchée V
+	- règle de cutoff de similarity: binary search until 1 < S < 10
+
+	- binary search pour avoir > 1
+
+
+## Later on 
 - inclus un lien vers les emails dans la réponse
 - Trouve 10 nouvelles queries et décide comment les gérer
   - 80/20, et SURTOUT ne pas faire plus que 80

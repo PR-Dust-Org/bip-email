@@ -10,7 +10,7 @@ from datetime import datetime
 from bip.email.retriever import Retriever, get_secret_key
 
 DUST_BODY = {"specification_hash":
-                 "92984a32d997bc751f225948085a50fe48f2ebf94db069f66c00fb1ea50ab03d",
+                "f62afe7eb61d97bf348f6fc20d11c051436cef3caf75e53e33bae589111bd70e",
              "config": {"INTENT_QUESTION":{"provider_id":"openai",
                                            "model_id":"gpt-3.5-turbo",
                                            "use_cache":True},
