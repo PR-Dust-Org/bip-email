@@ -1,3 +1,4 @@
+import re
 import requests
 import json
 import logging
@@ -53,7 +54,8 @@ class BipAPI(object):
             'texts': relevant_email_chunks,
             'query': question}
         result = BipAPI._call_dust_api(dust_input)
-        return result['run']['results'][0][0]['value']['completion']['text']
+        full_text_answer = result['run']['results'][0][0]['value']['completion']['text']
+        return re.split(r'Réponse\W*:\W?', full_text_answer)[1]
 
     def query_emails(self, question):
         relevant_email_chunks = self._get_relevant_email_chunks(question)
