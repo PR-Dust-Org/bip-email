@@ -5,7 +5,7 @@ import urllib3
 
 from bip.api import BipAPI
 
-bip_api = BipAPI.api.BipAPI()
+bip_api = BipAPI()
 
 
 def respond200(infoMessage = "Request Handled"):
@@ -31,7 +31,7 @@ def send_message_unhandled(userId, message):
         "Content-Type": "application/json",
         "Authorization": "Bearer " + token}
     http = urllib3.PoolManager()
-    r = http.request(
+    return http.request(
         "POST",
         url,
         body=json.dumps(body).encode('utf-8'),
@@ -128,7 +128,7 @@ def handleRequest(event):
             send_message(message["from"], "Ok, je cherche...")
             query_answer = bip_api.query_emails(message["text"])
             answer = {"from": "bip", 
-                      "text":  "ready for bip Api for " + message['text']} # BipApi().query(message["text"])}
+                      "text":  query_answer}
             print(answer)
     except Exception as e:
         print("Error processing user message")
