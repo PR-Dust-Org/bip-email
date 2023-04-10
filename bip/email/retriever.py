@@ -4,11 +4,21 @@ from datetime import datetime
 import logging
 import os.path
 import sys
+import openai
 
 import pinecone
 
-from langchain.embeddings import OpenAIEmbeddings
 from bip.email import gmail, chunker
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+
+def embed(text):
+    """Embed a text using OpenAI's API"""
+    response = openai.Embedding.create(
+        input=text,
+        model="text-embedding-ada-002")
+    return response['data'][0]['embedding']
 
 
 def get_secret_key(key_name, key_dir='secrets'):
@@ -26,7 +36,6 @@ class Retriever(object):
         pinecone.init(api_key=get_secret_key("pinecone", creds_dir),
                       environment="eu-west1-gcp")
         self._index = pinecone.Index("bip-email")
-        self._embeddings = OpenAIEmbeddings()
         logging.info("Retriever initialized")
 
     def _already_fully_stored(self, email_batch):
@@ -60,7 +69,7 @@ class Retriever(object):
             if i % 10 == 0:
                 logging.info(f"Cutting message {i} of {len(email_batch)}")
             enriched_chunks, metadatas = chunker.cut_message(message)
-            chunk_vectors = self._embeddings.embed_documents(enriched_chunks)
+            chunk_vectors = [embed(chunk) for chunk in enriched_chunks]
             for cv, m in zip(chunk_vectors, metadatas):
                 chunk_id = chunker.chunk_id(message, m['chunk_index'])
                 chunks.append((chunk_id, cv, m))
@@ -94,7 +103,7 @@ class Retriever(object):
     def query(self, query, **kwargs):
         """Query the index"""
         return self._index.query(
-            vector=self._embeddings.embed_query(query),
+            vector=embed(query),
             **kwargs)
 
 
