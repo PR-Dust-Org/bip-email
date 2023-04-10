@@ -40,7 +40,7 @@ def send_message_unhandled(userId, message):
 
 def send_message(userId,message):
     sendResponse = send_message_unhandled(userId, message)
-    if sendResponse.status_code == 200:
+    if sendResponse.status == 200:
         return respond200("Request handled successfully")
     else:
         print("Error sending message")

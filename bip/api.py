@@ -1,5 +1,5 @@
 import re
-import requests
+import urllib3
 import json
 import logging
 
@@ -21,6 +21,8 @@ DUST_BODY = {"specification_hash":
 
 class BipAPI(object):
 
+    _http = urllib3.PoolManager()
+
     def __init__(self):
         self._retriever = Retriever()
 
@@ -36,17 +38,22 @@ class BipAPI(object):
         self._retriever.update_email_index(start_date, end_date)
         logging.info('Done!')
 
-    @staticmethod
-    def _call_dust_api(dust_input):
+    @classmethod
+    def _call_dust_api(cls, dust_input):
+        # create the request headers and payload
         dust_key = get_secret_key("dust")
         url = 'https://dust.tt/api/v1/apps/philipperolet/a2cf4c7458/runs'
         headers = {'Content-Type': 'application/json',
                    'Authorization': f'Bearer {dust_key}'}
-        # create new dict from DUST_BODY and dust_input
         body = {**DUST_BODY, 'inputs': [dust_input]}
-        response = requests.post(url, data=json.dumps(body), headers=headers)
-        # return the parsed json
-        return response.json()
+
+        # make the request
+        response = cls._http.request(
+            'POST', 
+            url, 
+            body=json.dumps(body).encode('utf-8'), 
+            headers=headers)
+        return json.loads(response.data.decode('utf-8'))
 
     @staticmethod
     def _compute_answer(question, relevant_email_chunks):
