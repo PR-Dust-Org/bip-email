@@ -3,6 +3,10 @@ import json
 import os
 import urllib3
 
+from bip.api import BipAPI
+
+bip_api = BipAPI.api.BipAPI()
+
 
 def respond200(infoMessage = "Request Handled"):
     return {
@@ -11,7 +15,7 @@ def respond200(infoMessage = "Request Handled"):
     }
 
 
-def send_message(userId, message):
+def send_message_unhandled(userId, message):
     """Send a message to the user via whatsapp, using the Whatsapp
     Business Platform Cloud API
     @param {string} message - The message to
@@ -32,6 +36,16 @@ def send_message(userId, message):
         url,
         body=json.dumps(body).encode('utf-8'),
         headers=headers)
+
+
+def send_message(userId,message):
+    sendResponse = send_message_unhandled(userId, message)
+    if sendResponse.status_code == 200:
+        return respond200("Request handled successfully")
+    else:
+        print("Error sending message")
+        print(sendResponse)
+        raise Exception("Error sending message to user")
 
 
 def is_meta_graphapi_verification_request(event):
@@ -105,12 +119,14 @@ def handleRequest(event):
     # webhook endpoint (this endpoint).
     if message_too_old(message):
         return respond200("Event too old, notification not handled")
-    answer, conversation = {}, {}
+    answer = {}
     try:
         if message["text"] == "ping":
             answer = {"from": "bip", "text": "pong"}
         else:
             print("Processing user message: " + message["text"])
+            send_message(message["from"], "Ok, je cherche...")
+            query_answer = bip_api.query_emails(message["text"])
             answer = {"from": "bip", 
                       "text":  "ready for bip Api for " + message['text']} # BipApi().query(message["text"])}
             print(answer)
@@ -119,10 +135,5 @@ def handleRequest(event):
         print(e)
         answer = {"from": "bip", 
                   "text": "Je buggue. Toutes mes excuses."}
-    sendResponse = send_message(message["from"], answer["text"])
-    if sendResponse.status_code == 200:
-        return respond200("Request handled successfully")
-    else:
-        print("Error sending message")
-        print(sendResponse)
-        raise Exception("Error sending message to user")
+    return send_message(message["from"], answer["text"])
+    
