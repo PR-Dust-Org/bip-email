@@ -2,7 +2,8 @@ import logging
 
 from googleapiclient.discovery import build
 from bip.email.gmail import get_message_text_from_payload, get_header_value, \
-    get_last_threads, credentials
+    get_last_threads, gmail_api_client
+from bip.config import test_email
 
 
 def _create_chunk_metadata(chunk, message, chunk_index):
@@ -105,7 +106,7 @@ def chunk_id(message, chunk_index):
 
 
 def test_chunks():
-    gmail_api_client = build('gmail', 'v1', credentials=credentials())
+    gmail_api_client = gmail_api_client(test_email)
 
     # Get last threads from gmail, store their content in a chroma database
     for thread in get_last_threads(gmail_api_client, 3):

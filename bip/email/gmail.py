@@ -1,46 +1,51 @@
 # Module handling the connection with the gmail API
 import datetime
-
+import json
 import html2text
+import os.path
+import base64
+
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 
-import os.path
-import base64
 from googleapiclient.errors import HttpError
 from googleapiclient.discovery import build
 
+from bip import utils
+from bip.config import test_email
+
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
-
-def credentials(creds_dir='secrets'):
-    """Get credentials for the Gmail API."""
-    creds = None
-    # The file token.json stores the user's access and refresh tokens, and is
+def credentials(user_email):
+    """
+    Get up-to-date credentials for the Gmail API.
+    """
+    # the gmail json token stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    creds_file = os.path.join(creds_dir, 'credentials.json')
-    token_file = os.path.join(creds_dir, 'token.json')
-    if os.path.exists(token_file):
-        creds = Credentials.from_authorized_user_file(token_file, SCOPES)
+    try:
+        token = utils.get_secret(f"{user_email}-gmail-token")
+        creds = Credentials.from_authorized_user_info(json.loads(token), SCOPES)
+    except FileNotFoundError:
+        creds = None
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                creds_file, SCOPES)
+            flow = InstalledAppFlow.from_client_config(
+                json.loads(utils.get_secret('gmail-credentials')),
+                SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open(token_file, 'w') as token:
-            token.write(creds.to_json())
+        utils.set_secret(f"{user_email}-gmail-token", creds.to_json())
     return creds
 
 
-def gmail_api_client(creds_dir='secrets'):
+def gmail_api_client(user_email):
     """Get the gmail API client."""
-    return build('gmail', 'v1', credentials=credentials(creds_dir))
+    return build('gmail', 'v1', credentials=credentials(user_email))
 
 
 def get_header_value(headers, name):
@@ -127,7 +132,7 @@ def get_last_emails(gmail_client, last_update_date):
 
 
 def test_gmail_api():
-    gmail_api_client = build('gmail', 'v1', credentials=credentials())
+    gmail_api_client = gmail_api_client(test_email)
     # retrieve the last 3 threads from Gmail
     last_threads = get_last_threads(gmail_api_client, 3)
 
@@ -140,7 +145,7 @@ if __name__ == '__main__':
     print('Test')
     # list messages' subjects from messages after March 29, 2023 at 9
     retrieval_date = datetime.datetime(2023, 3, 28, 9, 0, 0)
-    messages = get_last_emails(gmail_api_client('../../secrets'),
+    messages = get_last_emails(gmail_api_client(test_email),
                                retrieval_date)
     for message in messages:
         print(message['snippet'])

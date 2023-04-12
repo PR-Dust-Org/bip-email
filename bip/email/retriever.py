@@ -9,7 +9,8 @@ import openai
 import pinecone
 
 from bip.email import gmail, chunker
-from bip.utils import get_secret_key, embed
+from bip.utils import get_secret, embed
+from bip.config import test_email
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -17,10 +18,10 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 class Retriever(object):
     UPSERT_BATCH_SIZE = 100
 
-    def __init__(self, namespace=None, creds_dir='secrets'):
+    def __init__(self, user_email, namespace=None):
         self._namespace = namespace
-        self._gmail_client = gmail.gmail_api_client(creds_dir)
-        pinecone.init(api_key=get_secret_key("pinecone", creds_dir),
+        self._gmail_client = gmail.gmail_api_client(user_email)
+        pinecone.init(api_key=get_secret("pinecone"),
                       environment="eu-west1-gcp")
         self._index = pinecone.Index("bip-email")
         logging.info("Retriever initialized")
@@ -95,7 +96,7 @@ class Retriever(object):
 
 
 if __name__ == '__main__':
-    retriever = Retriever()
+    retriever = Retriever(test_email)
     script_start_date = datetime.strptime(sys.argv[1], "%Y-%m-%d")
     script_end_date = datetime.strptime(sys.argv[2], "%Y-%m-%d")
     retriever.update_email_index(script_start_date, script_end_date)

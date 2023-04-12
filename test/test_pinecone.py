@@ -5,7 +5,7 @@ from langchain.embeddings import OpenAIEmbeddings
 from bip import utils
 
 # Connect to pinecone
-pinecone.init(api_key=utils.get_secret_key("pinecone"),
+pinecone.init(api_key=utils.get_secret("pinecone"),
               environment="eu-west1-gcp")
 
 # get 2 embeddings

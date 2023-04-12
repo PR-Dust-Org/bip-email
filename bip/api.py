@@ -2,7 +2,7 @@ import re
 import urllib3
 import json
 import logging
-from bip.utils import get_secret_key
+from bip.utils import get_secret
 
 from bip.email.retriever import Retriever
 
@@ -24,8 +24,8 @@ class BipAPI(object):
 
     _http = urllib3.PoolManager()
 
-    def __init__(self):
-        self._retriever = Retriever()
+    def __init__(self, user_email):
+        self._retriever = Retriever(user_email)
 
     def _get_relevant_email_chunks(self, question):
         result = (self._retriever
@@ -42,7 +42,7 @@ class BipAPI(object):
     @classmethod
     def _call_dust_api(cls, dust_input):
         # create the request headers and payload
-        dust_key = get_secret_key("dust")
+        dust_key = get_secret("dust")
         url = 'https://dust.tt/api/v1/apps/philipperolet/a2cf4c7458/runs'
         headers = {'Content-Type': 'application/json',
                    'Authorization': f'Bearer {dust_key}'}

@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     logging.info("Starting Pinecone")
     pinecone.init(
-        api_key=utils.get_secret_key("pinecone"),
+        api_key=utils.get_secret("pinecone"),
         environment="eu-west1-gcp")
     index = pinecone.Index("bip-email")
     embeddings = OpenAIEmbeddings()

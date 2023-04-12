@@ -2,7 +2,7 @@ import datetime
 import unittest
 
 from bip.email import retriever
-
+from bip.config import test_email
 
 class MyTestCase(unittest.TestCase):
     def retrieve_emails(self, test_retriever):
@@ -13,7 +13,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_retrieval(self):
         # retrieve mails between 2023-03-28 and 2023-03-30
-        test_retriever = retriever.Retriever('test', '../secrets')
+        test_retriever = retriever.Retriever(test_email, 'test')
         self.retrieve_emails(test_retriever)
         # Message id test
         result = test_retriever._index.fetch(

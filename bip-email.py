@@ -5,6 +5,7 @@ import logging
 
 from datetime import datetime
 from bip.api import BipAPI
+from bip.config import test_email
 
 
 def parse_arguments():
@@ -74,7 +75,7 @@ def parse_arguments():
 
 if __name__ == '__main__':
     args = parse_arguments()
-    bipCli = BipAPI()
+    bipCli = BipAPI(test_email)
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
     else:

@@ -1,11 +1,16 @@
 import os.path
 import openai
 
+secrets_dir = 'secrets'
 
-def get_secret_key(key_name, key_dir='secrets'):
-    """Get API key from secrets/{key_name}-key.txt"""
-    with open(os.path.join(key_dir,f"{key_name}-key.txt")) as f:
+def get_secret(key_name):
+    with open(os.path.join(secrets_dir,f"{key_name}.txt")) as f:
         return f.read().strip()
+
+
+def set_secret(key_name, value):
+    with open(os.path.join(secrets_dir,f"{key_name}.txt"), 'w') as f:
+        f.write(value)
 
 
 def embed(text):

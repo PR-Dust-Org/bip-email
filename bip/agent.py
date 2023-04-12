@@ -4,8 +4,9 @@ import os
 import urllib3
 
 from bip.api import BipAPI
+from bip.config import test_email
 
-bip_api = BipAPI()
+bip_api = BipAPI(test_email)
 
 
 def respond200(infoMessage = "Request Handled"):
