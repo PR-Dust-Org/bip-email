@@ -75,11 +75,12 @@ def parse_arguments():
 
 if __name__ == '__main__':
     args = parse_arguments()
-    bipCli = BipAPI(test_email)
     if args.verbose:
-        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level=logging.DEBUG, force=True)
     else:
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(level=logging.INFO, force=True)
+    logging.info("Starting Bip Email CLI")
+    bipCli = BipAPI(test_email)
     if args.subcommand == 'retrieve':
         bipCli.retrieve_emails(args.start_date, args.end_date, args.clear_vs)
     elif args.subcommand == 'query':

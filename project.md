@@ -1,6 +1,6 @@
 # Milestone 2 pour bip email
 #### Misc
-- regénération du token gmail
++ regénération du token gmail
 - logging
 #### Amélioration de la qualité
 - queries : plus de queries marchent
