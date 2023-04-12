@@ -1,7 +1,7 @@
 # Milestone 2 pour bip email
 #### Misc
 + regénération du token gmail
-- logging
++ logging
 #### Amélioration de la qualité
 - queries : plus de queries marchent
   - "le dernier", "le prochain" + celles de la liste => > 80%

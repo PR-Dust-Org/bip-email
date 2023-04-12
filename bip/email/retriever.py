@@ -63,16 +63,16 @@ class Retriever(object):
                 chunks.append((chunk_id, cv, m))
         return chunks
 
-    def _log_batch_date(self, email_batch):
-        """Log the date of the first message in the batch"""
+    def _get_batch_date(self, email_batch):
+        """Get the date of the first message in the batch"""
         first_message_ts = int(email_batch[0]['internalDate']) / 1000
-        batch_date = (datetime.fromtimestamp(first_message_ts)
-                      .strftime("%Y-%m-%d %H:%M"))
-        logging.info(f"Storing new batch starting from date {batch_date}")
+        return (datetime.fromtimestamp(first_message_ts)
+                .strftime("%Y-%m-%d %H:%M"))
 
     def _store_email_batch(self, email_batch):
         """Store an email batch in the index"""
-        self._log_batch_date(email_batch)
+        logging.info("Storing new batch starting from date "
+                     + self._get_batch_date(email_batch))
         chunks = self._cut_messages(email_batch)
         self._store_chunks(chunks)
 
@@ -81,12 +81,18 @@ class Retriever(object):
         self._index.delete(delete_all=True, namespace=self._namespace)
 
     def update_email_index(self, start_date, end_date):
-        """Update the email index with emails between start_date and end_date"""
-        logging.info(f"Updating email index with emails between {start_date} and {end_date}")
+        """Update the email index with emails between start_date and end_date
+        """
+        logging.info("Updating email index with emails "
+                     f"between {start_date} and {end_date}")
         batches = gmail.email_batches(self._gmail_client, start_date, end_date)
         for email_batch in batches:
-            if not(self._already_fully_stored(email_batch)):
+            if not self._already_fully_stored(email_batch):
                 self._store_email_batch(email_batch)
+            else:
+                logging.info("Email batch starting from date "
+                             + self._get_batch_date(email_batch)
+                             + " already stored, skipping")
 
     def query(self, query, **kwargs):
         """Query the index"""
