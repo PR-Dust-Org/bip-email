@@ -2,10 +2,10 @@
 import pinecone
 from langchain.embeddings import OpenAIEmbeddings
 
-from bip.email import retriever
+from bip import utils
 
 # Connect to pinecone
-pinecone.init(api_key=retriever.get_secret_key("pinecone"),
+pinecone.init(api_key=utils.get_secret_key("pinecone"),
               environment="eu-west1-gcp")
 
 # get 2 embeddings

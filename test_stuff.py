@@ -9,7 +9,7 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings import OpenAIEmbeddings
 
-from bip.email import retriever
+from bip import utils
 
 
 def use_chain():
@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     logging.info("Starting Pinecone")
     pinecone.init(
-        api_key=retriever.get_secret_key("pinecone"),
+        api_key=utils.get_secret_key("pinecone"),
         environment="eu-west1-gcp")
     index = pinecone.Index("bip-email")
     embeddings = OpenAIEmbeddings()

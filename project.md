@@ -1,6 +1,75 @@
+# Milestone 2 pour bip email
+#### Misc
+- regénération du token gmail
+- logging
+#### Amélioration de la qualité
+- queries : plus de queries marchent
+  - "le dernier", "le prochain" + celles de la liste => > 80%
+  - fonctionnement sur 1 an et demi
+- uses case: résume les derniers messages (le thread)
+- small chat: réponds à des follow-up questions
+- (OPT) vitesse : < 10s most of the time
+  - fais un audit et vois de combien tu peux raisonnablement baisser sans hoster ton modèle
+
+#### Install pour d'autres personnes
+- secrets handling
+- ajout d'une autre pers. dans le code
+- possibilité d'avoir d'autres indexes emails
+- gestion des credentials pour une autre personne
+- script d'install pour une autre personne
+- script de retrieve qui tourne toutes les heures
+
+
+# Brainstorm Milestone 2
+En soirée avec des inconnus? ou peinard avec lapinette, shokooh, sam...
+=> Peinard (sinon trop fat)
+Caveats à expliquer aux gens:
+- sur 1 an pour l'instant
+- à jour de 1h sur tes emails
+- c'est pas une barre de search, c'est une pers à qui tu parles -- résister à la search query
+
+Car en parallèle il faut que moi j'utilise, et pour ça améliorer
+
+
+### Liste des features requises
+#### Amélioration de la qualité
+- queries : plus de queries marchent
+  - "le dernier", "le prochain" et la liste de tous les autres
+- uses case: résume les derniers messages (le thread)
+- small chat: réponds à des follow-up questions
+- vitesse : < 10s most of the time
+
+#### Install pour d'autres personnes
+- regénération du token gmail ok
+- secrets handling
+- ajout d'une autre pers. dans le code
+- possibilité d'avoir d'autres indexes emails
+- gestion des credentials pour une autre personne
+- script d'install pour une autre personne
+- script de retrieve qui tourne toutes les heures
+
+
+
+
+
+### Idées techniques
+- utiliser un thread entier VS un chunk de message quand c'est pertinent
+- cosine distance aml précision
+- vitesse: 
+  - n'analyser qu'un texte quand un seul suffit? 
+  - enlever la passe de construction de question?
+  - diviser la longueur des textes générés demandés?
+  - résumer les threads entiers, et utiliser ça comme embeddings - ainsi on se limite à des textes plus courts et denses en infos
+  - 2 étapes - fast search, puis prévenir si fail et longer search then (<10s, > 1mn)
+
+### Liste des features possibles
+- auth flow via whatsapp + script qui fait le retrieve  
+# Legacy - TBS
 Objectif: 
 1- Montrer à mes amis - regardez comme c'est cool
 2- projet opensource utilisable par d'autres - sur mzero, twitter et linkedin
+
+
 
 ## Milestone 1
 - 5 queries sur 10 (sur une base de ~30 queries dont 10 adversariales)

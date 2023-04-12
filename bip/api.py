@@ -2,8 +2,9 @@ import re
 import urllib3
 import json
 import logging
+from bip.utils import get_secret_key
 
-from bip.email.retriever import Retriever, get_secret_key
+from bip.email.retriever import Retriever
 
 DUST_BODY = {"specification_hash":
             "f62afe7eb61d97bf348f6fc20d11c051436cef3caf75e53e33bae589111bd70e",
