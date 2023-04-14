@@ -43,9 +43,9 @@ def parse_arguments():
         action='store_true',
         help='Clear the vector store before adding the new emails')
 
-    # Create parser for the "query" subcommand
+    # Create parser for the "ask" subcommand
     parser_query = subparsers.add_parser(
-        'query',
+        'ask',
         help='Ask a question to your emails and get the answer')
     # Add argument to the "query" subcommand: question
     parser_query.add_argument(
@@ -54,11 +54,11 @@ def parse_arguments():
 
     # Create parser for the "batch-query" subcommand
     parser_batch_query = subparsers.add_parser(
-        'batch-query',
+        'batch-ask',
         help='Ask a list of questions to your emails and get the answers')
     # Add argument to the "batch-query" subcommand: question-list
     parser_batch_query.add_argument(
-        'question_list',
+        'questions_file',
         help='Path to the file containing the list of questions to ask, '
              'in JSONL format {"question": "question text"}')
 
@@ -68,7 +68,7 @@ def parse_arguments():
         help='Generate test data for the dust app in form of a jsonl file')
     # Add argument to the "gen-test-data" subcommand: query-list
     parser_gen_test_data.add_argument(
-        'query_list',
+        'questions_file',
         help='Path to the file containing the list of queries to ask')
     return parser.parse_args()
 
@@ -83,9 +83,10 @@ if __name__ == '__main__':
     bipCli = BipAPI(test_email)
     if args.subcommand == 'retrieve':
         bipCli.retrieve_emails(args.start_date, args.end_date, args.clear_vs)
-    elif args.subcommand == 'query':
-        print(bipCli.query_emails(args.question))
-    elif args.subcommand == 'batch-query':
-        print(bipCli.batch_query_emails(args.question_list))
+    elif args.subcommand == 'ask':
+        print(bipCli.ask_emails(args.question))
+    elif args.subcommand == 'batch-ask':
+        print("\n---\n".join(
+              bipCli.batch_ask_emails_from_file(args.questions_file)))
     elif args.subcommand == 'gen-test-data':
-        bipCli.gen_test_data(args.query_list)
+        bipCli.gen_test_data(args.questions_file)

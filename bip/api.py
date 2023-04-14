@@ -8,7 +8,7 @@ from bip.email.retriever import Retriever
 
 DUST_BODY = {
     "specification_hash":
-    "f62afe7eb61d97bf348f6fc20d11c051436cef3caf75e53e33bae589111bd70e",
+    "250113fe7361a08f0108f2c2a27366e3e755fd80fc732838b2f9262ba0f0e355",
     "config": {
         "INTENT_QUESTION":
         {"provider_id": "openai",
@@ -45,13 +45,13 @@ class BipAPI(object):
         logging.info('Done!')
 
     @classmethod
-    def _call_dust_api(cls, dust_input):
+    def _call_dust_api(cls, dust_inputs):
         # create the request headers and payload
         dust_key = get_secret("dust")
         url = 'https://dust.tt/api/v1/apps/philipperolet/a2cf4c7458/runs'
         headers = {'Content-Type': 'application/json',
                    'Authorization': f'Bearer {dust_key}'}
-        body = {**DUST_BODY, 'inputs': [dust_input]}
+        body = {**DUST_BODY, 'inputs': dust_inputs}
 
         # make the request
         response = cls._http.request(
@@ -61,29 +61,37 @@ class BipAPI(object):
             headers=headers)
         return json.loads(response.data.decode('utf-8'))
 
-    @staticmethod
-    def _compute_answer(question, relevant_email_chunks):
-        dust_input = {
-            'texts': relevant_email_chunks,
-            'query': question}
-        results = BipAPI._call_dust_api(dust_input)['run']['results']
-        full_text_answer = results[0][0]['value']['completion']['text']
-        return re.split(r'Réponse\W*:\W?', full_text_answer)[1]
+    def _create_dust_inputs(self, questions):
+        relevant_email_chunks = [self._get_relevant_email_chunks(question)
+                                 for question in questions]
+        return [{'texts': chunks, 'question': question}
+                for question, chunks in zip(questions, relevant_email_chunks)]
 
-    def query_emails(self, question):
-        relevant_email_chunks = self._get_relevant_email_chunks(question)
-        return self._compute_answer(question, relevant_email_chunks)
+    def _parse_dust_results(self, results):
+        def _parse_result(result):
+            return re.split(r'Réponse\W*:\W?',
+                            result[0]['value']['completion']['text'])[1]
+        return [_parse_result(result) for result in results]
 
-    def batch_query_emails(self, question_list):
-        with open(question_list, 'r') as f:
+    def batch_ask_emails(self, questions):
+        dust_inputs = self._create_dust_inputs(questions)
+        results = BipAPI._call_dust_api(dust_inputs)['run']['results']
+        return self._parse_dust_results(results)
+
+    def batch_ask_emails_from_file(self, questions_file):
+        with open(questions_file, 'r') as f:
             questions = [json.loads(line)['question'] for line in f]
-        return '\n---\n'.join(
-            [self.query_emails(question) for question in questions])
+        return self.batch_ask_emails(questions)
 
-    def gen_test_data(self, query_list):
-        with open(query_list, 'r') as f:
-            queries = [json.loads(line)['question'] for line in f]
-        for query in queries:
-            relevant_email_chunks = self._get_relevant_email_chunks(query)
-            query_and_texts = {'query': query, 'texts': relevant_email_chunks}
-            print(json.dumps(query_and_texts))
+    def ask_emails(self, question):
+        return self.batch_ask_emails([question])[0]
+
+    def gen_test_data(self, questions_file):
+        with open(questions_file, 'r') as f:
+            questions = [json.loads(line)['question'] for line in f]
+        print(json.dumps(self._create_dust_inputs(questions)))
+
+    def test_asks(self, questions_file):
+        # with open(questions_file, 'r') as f:
+        #    questions = [json.loads(line)['question'] for line in f]
+        raise NotImplementedError

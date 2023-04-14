@@ -127,7 +127,7 @@ def handleRequest(event):
         else:
             print("Processing user message: " + message["text"])
             send_message(message["from"], "Ok, je cherche...")
-            query_answer = bip_api.query_emails(message["text"])
+            query_answer = bip_api.ask_emails(message["text"])
             answer = {"from": "bip", 
                       "text":  query_answer}
             print(answer)
