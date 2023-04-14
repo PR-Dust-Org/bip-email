@@ -89,4 +89,3 @@ if __name__ == '__main__':
         print(bipCli.batch_query_emails(args.question_list))
     elif args.subcommand == 'gen-test-data':
         bipCli.gen_test_data(args.query_list)
-

@@ -31,9 +31,9 @@ class Retriever(object):
 
         Since we store the emails in batches,  and assume they are sorted by
         descending date, we can check if the first and last emails of the batch
-        are already stored.
-        Since the index stores message chunks, not messages, we check for the first
-        chunk of the first and last message, using the chunk_id function
+        are already stored. Since the index stores message chunks, not
+        messages, we check for the first chunk of the first and last message,
+        using the chunk_id function
         """
         first_message = email_batch[0]
         last_message = email_batch[-1]

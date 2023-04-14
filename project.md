@@ -1,3 +1,18 @@
+## Todo now
+- Créer une base de test queries que je peux refaire tourner facilement
+  - command-line "test-queries"
+  - 10 queries
+  - envoi à un LLM query, answer, expected_data_in_answer => qui renvoie Y/N
+  - calcul du score total et envoi du score + les failures avec le détail
+- Expérimenter sur 4-5 emails le résumé de threads: on ne perd pas d'infos?
+  - comment va-t-on générer le résumé?
+  - 3 emails clefs sur 3 queries clefs : horaires train, mail françois?
+  - + 2 long threads (et imaginer des queries)
+  - script python pour les récupérer, les résumer et afficher le résumé
+- Code pour segmenter par threads dans le retriever
+  - possibilité d'avoir plusieurs bases donc
+  - en metadata non indexée, full thread + résumé
+- Segmentation d'1 mois, test pour les queries concernées
 # Milestone 2 pour bip email
 #### Misc
 + regénération du token gmail
@@ -7,6 +22,7 @@
   - "le dernier", "le prochain" + celles de la liste => > 80%
   - fonctionnement sur 1 an et demi
 - uses case: résume les derniers messages (le thread)
+- use case: résume un lien que je te partage (bonus)
 - small chat: réponds à des follow-up questions
 - (OPT) vitesse : < 10s most of the time
   - fais un audit et vois de combien tu peux raisonnablement baisser sans hoster ton modèle

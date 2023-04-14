@@ -6,18 +6,23 @@ from bip.utils import get_secret
 
 from bip.email.retriever import Retriever
 
-DUST_BODY = {"specification_hash":
-            "f62afe7eb61d97bf348f6fc20d11c051436cef3caf75e53e33bae589111bd70e",
-            "config": {"INTENT_QUESTION":{"provider_id":"openai",
-                                        "model_id":"gpt-3.5-turbo",
-                                        "use_cache":True},
-                    "MODEL_1": {"provider_id":"openai",
-                                "model_id":"gpt-3.5-turbo",
-                                "use_cache":True},
-                    "MODEL": {"provider_id":"openai",
-                                "model_id":"gpt-3.5-turbo",
-                                "use_cache": True}},
-                "blocking": True}
+DUST_BODY = {
+    "specification_hash":
+    "f62afe7eb61d97bf348f6fc20d11c051436cef3caf75e53e33bae589111bd70e",
+    "config": {
+        "INTENT_QUESTION":
+        {"provider_id": "openai",
+         "model_id": "gpt-3.5-turbo",
+         "use_cache": True},
+        "MODEL_1":
+        {"provider_id": "openai",
+         "model_id": "gpt-3.5-turbo",
+         "use_cache": True},
+        "MODEL":
+        {"provider_id": "openai",
+         "model_id": "gpt-3.5-turbo",
+         "use_cache": True}},
+    "blocking": True}
 
 
 class BipAPI(object):
@@ -50,9 +55,9 @@ class BipAPI(object):
 
         # make the request
         response = cls._http.request(
-            'POST', 
-            url, 
-            body=json.dumps(body).encode('utf-8'), 
+            'POST',
+            url,
+            body=json.dumps(body).encode('utf-8'),
             headers=headers)
         return json.loads(response.data.decode('utf-8'))
 
@@ -61,8 +66,8 @@ class BipAPI(object):
         dust_input = {
             'texts': relevant_email_chunks,
             'query': question}
-        result = BipAPI._call_dust_api(dust_input)
-        full_text_answer = result['run']['results'][0][0]['value']['completion']['text']
+        results = BipAPI._call_dust_api(dust_input)['run']['results']
+        full_text_answer = results[0][0]['value']['completion']['text']
         return re.split(r'Réponse\W*:\W?', full_text_answer)[1]
 
     def query_emails(self, question):
@@ -72,12 +77,13 @@ class BipAPI(object):
     def batch_query_emails(self, question_list):
         with open(question_list, 'r') as f:
             questions = [json.loads(line)['question'] for line in f]
-        return '\n---\n'.join([self.query_emails(question) for question in questions])
+        return '\n---\n'.join(
+            [self.query_emails(question) for question in questions])
 
     def gen_test_data(self, query_list):
         with open(query_list, 'r') as f:
             queries = [json.loads(line)['question'] for line in f]
         for query in queries:
             relevant_email_chunks = self._get_relevant_email_chunks(query)
-            query_and_texts = { 'query': query, 'texts': relevant_email_chunks }
+            query_and_texts = {'query': query, 'texts': relevant_email_chunks}
             print(json.dumps(query_and_texts))
