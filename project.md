@@ -13,6 +13,7 @@
   - possibilité d'avoir plusieurs bases donc
   - en metadata non indexée, full thread + résumé
 - Segmentation d'1 mois, test pour les queries concernées
+
 # Milestone 2 pour bip email
 #### Misc
 + regénération du token gmail

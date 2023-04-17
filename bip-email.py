@@ -70,6 +70,18 @@ def parse_arguments():
     parser_gen_test_data.add_argument(
         'questions_file',
         help='Path to the file containing the list of queries to ask')
+    
+    # Create parser for the "test-questions" subcommand
+    parser_test_questions = subparsers.add_parser(
+        'test-questions',
+        help='Test the questions in the file')
+    # Add argument to the "test-questions" subcommand: questions_file
+    parser_test_questions.add_argument(
+        'questions_file',
+        help='Path to the file containing the list of questions to ask, '
+             'in JSONL format {"question": "question text",'
+             '"expected": "expected answer"}')
+
     return parser.parse_args()
 
 
@@ -90,3 +102,5 @@ if __name__ == '__main__':
               bipCli.batch_ask_emails_from_file(args.questions_file)))
     elif args.subcommand == 'gen-test-data':
         bipCli.gen_test_data(args.questions_file)
+    elif args.subcommand == 'test-questions':
+        bipCli.test_questions(args.questions_file)
