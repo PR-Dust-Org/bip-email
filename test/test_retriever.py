@@ -4,6 +4,7 @@ import unittest
 from bip.email import retriever
 from bip.config import test_email
 
+
 class MyTestCase(unittest.TestCase):
     def retrieve_emails(self, test_retriever):
         test_retriever._index.delete(delete_all=True)
@@ -13,12 +14,13 @@ class MyTestCase(unittest.TestCase):
 
     def test_retrieval(self):
         # retrieve mails between 2023-03-28 and 2023-03-30
-        test_retriever = retriever.Retriever(test_email, 'test')
+        test_namespace = 'retriever-test'
+        test_retriever = retriever.Retriever(test_email, test_namespace)
         self.retrieve_emails(test_retriever)
         # Message id test
         result = test_retriever._index.fetch(
             ids=["1872c13dd549e130-0"],
-            namespace="test")
+            namespace=test_namespace)
         self.assertEqual(
             result['vectors']['1872c13dd549e130-1']['metadata']['subject'],
             'Ton soutien peut faire la différence')
@@ -31,12 +33,18 @@ class MyTestCase(unittest.TestCase):
             vector=query,
             includeValues=False,
             includeMetadata=True,
-            namespace="test").get('matches')
+            namespace=test_namespace).get('matches')
 
         # for each result, assert the value of the subject
-        self.assertEqual(result[0].metadata['subject'], 'Gens de Confiance vous présente « Ce jour où... » avec Gemmyo')
-        self.assertEqual(result[1].metadata['subject'], 'De nouveaux biens de prestige pour votre recherche')
-        self.assertEqual(result[2].metadata['subject'], 'De nouveaux biens de prestige pour votre recherche')
+        self.assertEqual(
+            result[0].metadata['subject'],
+            'Gens de Confiance vous présente « Ce jour où... » avec Gemmyo')
+        self.assertEqual(
+            result[1].metadata['subject'],
+            'De nouveaux biens de prestige pour votre recherche')
+        self.assertEqual(
+            result[2].metadata['subject'],
+            'De nouveaux biens de prestige pour votre recherche')
 
 
 if __name__ == '__main__':
