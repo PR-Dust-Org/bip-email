@@ -2,7 +2,6 @@
 import datetime
 import json
 import html2text
-import os.path
 import base64
 
 from google.auth.transport.requests import Request
@@ -17,6 +16,7 @@ from bip.config import test_email
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
+
 def credentials(user_email):
     """
     Get up-to-date credentials for the Gmail API.
@@ -26,7 +26,8 @@ def credentials(user_email):
     # time.
     try:
         token = utils.get_secret(f"{user_email}-gmail-token")
-        creds = Credentials.from_authorized_user_info(json.loads(token), SCOPES)
+        creds = Credentials.from_authorized_user_info(
+            json.loads(token), SCOPES)
     except FileNotFoundError:
         creds = None
     # If there are no (valid) credentials available, let the user log in.
@@ -90,14 +91,16 @@ def get_last_threads(gmail_api_client, number_of_threads):
     Doc: https://developers.google.com/gmail/api/v1/reference/users/threads/
     """
     try:
-        response = gmail_api_client.users().threads().list(userId='me',
-                                                           maxResults=number_of_threads).execute()
+        response = (gmail_api_client.users().threads()
+                    .list(userId='me', maxResults=number_of_threads)
+                    .execute())
         threads = response['threads']
         result = []
         for thread in threads:
             thread_id = thread['id']
-            thread = gmail_api_client.users().threads().get(userId='me',
-                                                            id=thread_id).execute()
+            thread = (gmail_api_client.users().threads()
+                      .get(userId='me', id=thread_id)
+                      .execute())
             result.append(thread)
         return result
     except HttpError as error:
@@ -119,22 +122,23 @@ def get_last_emails(gmail_client, last_update_date):
     :param last_update_date: the last update date
     """
     try:
-        last_ts = last_update_date.timestamp()
+        last_date = last_update_date.strftime('%Y/%m/%d')
         response = (gmail_client.users().messages()
-                    .list(userId='me', q=f"after:2023-03-29")
+                    .list(userId='me', q=f"after:{last_date}")
                     .execute())
         message_heads = response['messages']
         if not message_heads:
             return []
-        return list(map(lambda x: _get_message(gmail_client, x), message_heads))
+        return list(
+            map(lambda x: _get_message(gmail_client, x), message_heads))
     except HttpError as error:
         print('An error occurred: %s' % error)
 
 
 def test_gmail_api():
-    gmail_api_client = gmail_api_client(test_email)
+    client = gmail_api_client(test_email)
     # retrieve the last 3 threads from Gmail
-    last_threads = get_last_threads(gmail_api_client, 3)
+    last_threads = get_last_threads(client, 3)
 
     # display the last 3 threads
     for thread in last_threads:
@@ -152,7 +156,7 @@ if __name__ == '__main__':
 
 
 def email_batches(gmail_client, start_date, end_date, batch_size=100):
-    """Get the emails between two dates and return them in batches via a generator.
+    """Get emails between two dates and return them in batches via a generator.
 
     :param gmail_client: the gmail API client
     :param start_date: the start date, inclusive

@@ -70,7 +70,7 @@ def parse_arguments():
     parser_gen_test_data.add_argument(
         'questions_file',
         help='Path to the file containing the list of queries to ask')
-    
+
     # Create parser for the "test-questions" subcommand
     parser_test_questions = subparsers.add_parser(
         'test-questions',
