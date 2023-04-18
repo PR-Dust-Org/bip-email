@@ -1,7 +1,6 @@
 # This module retrieves emails from a gmail account and stores them in a
 # vector store
 from datetime import datetime
-import logging
 import os.path
 import sys
 import openai
@@ -10,7 +9,7 @@ import pinecone
 
 from bip.email import gmail, chunker
 from bip.utils import get_secret, embed
-from bip.config import test_email
+from bip.config import test_email, logger
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -24,7 +23,8 @@ class Retriever(object):
         pinecone.init(api_key=get_secret("pinecone"),
                       environment="eu-west1-gcp")
         self._index = pinecone.Index("bip-email")
-        logging.info("Retriever initialized")
+        logger.info(f"Retriever initialized for {user_email} "
+                    f"(namespace: {namespace})")
 
     def _already_fully_stored(self, email_batch):
         """Check if the email batch is already fully stored in the index.
@@ -44,9 +44,9 @@ class Retriever(object):
 
     def _store_chunks(self, chunks):
         for i in range(0, len(chunks), self.UPSERT_BATCH_SIZE):
-            logging.info(
+            logger.info(
                 f"Upserting chunks {i} to {i + self.UPSERT_BATCH_SIZE}")
-            logging.debug(f"Chunks: {chunks[i:i + self.UPSERT_BATCH_SIZE]}")
+            logger.debug(f"Chunks: {chunks[i:i + self.UPSERT_BATCH_SIZE]}")
             self._index.upsert(vectors=chunks[i:i + self.UPSERT_BATCH_SIZE],
                                namespace=self._namespace)
 
@@ -55,7 +55,7 @@ class Retriever(object):
         chunks = []
         for i, message in enumerate(email_batch):
             if i % 10 == 0:
-                logging.info(f"Cutting message {i} of {len(email_batch)}")
+                logger.info(f"Cutting message {i} of {len(email_batch)}")
             enriched_chunks, metadatas = chunker.cut_message(message)
             chunk_vectors = [embed(chunk) for chunk in enriched_chunks]
             for cv, m in zip(chunk_vectors, metadatas):
@@ -71,8 +71,8 @@ class Retriever(object):
 
     def _store_email_batch(self, email_batch):
         """Store an email batch in the index"""
-        logging.info("Storing new batch starting from date "
-                     + self._get_batch_date(email_batch))
+        logger.info("Storing new batch starting from date "
+                    + self._get_batch_date(email_batch))
         chunks = self._cut_messages(email_batch)
         self._store_chunks(chunks)
 
@@ -83,16 +83,16 @@ class Retriever(object):
     def update_email_index(self, start_date, end_date):
         """Update the email index with emails between start_date and end_date
         """
-        logging.info("Updating email index with emails "
-                     f"between {start_date} and {end_date}")
+        logger.info("Updating email index with emails "
+                    f"between {start_date} and {end_date}")
         batches = gmail.email_batches(self._gmail_client, start_date, end_date)
         for email_batch in batches:
             if not self._already_fully_stored(email_batch):
                 self._store_email_batch(email_batch)
             else:
-                logging.info("Email batch starting from date "
-                             + self._get_batch_date(email_batch)
-                             + " already stored, skipping")
+                logger.info("Email batch starting from date "
+                            + self._get_batch_date(email_batch)
+                            + " already stored, skipping")
 
     def query(self, query, **kwargs):
         """Query the index"""

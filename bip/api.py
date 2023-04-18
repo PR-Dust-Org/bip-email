@@ -1,9 +1,9 @@
 import re
 import urllib3
 import json
-import logging
-from bip.utils import get_secret
 
+from bip.utils import get_secret
+from bip.config import logger
 from bip.email.retriever import Retriever
 
 ASK_EMAIL_DUST_PARAMS = {
@@ -55,7 +55,7 @@ class BipAPI(object):
         if clear_vs:
             self._retriever.delete_all_emails()
         self._retriever.update_email_index(start_date, end_date)
-        logging.info('Done!')
+        logger.info('Done!')
 
     @classmethod
     def _call_dust_api(cls, dust_params, dust_inputs):

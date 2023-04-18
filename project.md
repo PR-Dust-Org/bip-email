@@ -1,4 +1,8 @@
 ## Todo now
+- logging
+  - ajouter un outil de création de logging dans log.py
+  - ajouter un logger dans config
+  - changer retriever, bip-email, bip-api pour utiliser ce logger
 - Créer une base de test queries que je peux refaire tourner facilement
   - command-line "test-queries"
   - 10 queries
