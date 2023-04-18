@@ -129,14 +129,17 @@ class BipAPI(object):
         pass_count = sum(1 for result in test_results if 'PASS' in result)
 
         # Print the results
-        print(f'Tested questions: {len(tested_questions)}')
+        print(f'Tested questions: {len(tested_questions)} '
+              f'out of {len(questions)}')
         print(f'Pass: {pass_count}')
-        print(f'Fail: {len(tested_questions) - pass_count}')
+        print(f'Fail: {len(tested_questions) - pass_count}\n---\n\n')
 
         test_data = zip(tested_questions, answers, test_results)
 
         # Sort test data with failed tests first
-        test_data = sorted(test_data, key=lambda x: 'PASS' not in x[2])
+        test_data = sorted(test_data,
+                           key=lambda x: 'PASS' not in x[2],
+                           reverse=True)
         # Print the detailed results
         for question, answer, test_result in test_data:
             print(test_result)
@@ -144,7 +147,3 @@ class BipAPI(object):
             print(f'Expected: {question["expected"]}')
             print(f'Actual: {answer}')
             print('---')
-
-        untested_questions_count = len(questions) - len(tested_questions)
-        if untested_questions_count > 0:
-            print(f'Untested questions: {untested_questions_count}')

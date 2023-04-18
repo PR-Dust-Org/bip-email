@@ -17,6 +17,28 @@
   - possibilité d'avoir plusieurs bases donc
   - en metadata non indexée, full thread + résumé
 - Segmentation d'1 mois, test pour les queries concernées
+## Idées chaudes
+- vitesse: limiter à 3 calls + supprimer le query call => gagner 5-10s?
+- enlever la passe dust gagnerait combien? probablement 1s max
+- enlever la couche whatsapp => 5 à 10s (aller / retour)
+- + possibilité de streamer => encore 10s
+- doubler les api keys marcherait?
+
+## queries
+- "quand est mon rdv avec stan cette semaine?"
+- "quand est mon entretien avec dust?"
+- "programme de mon évènement de ce soir stp"
+- "qui est xavier lottin?" => le LLM transforme mal la query car ajoute "et pourquoi est-il mentionné dans mes emails?"
+"Quand ai-je acheté le livre nos voisins silencieux?"
+"combien coûte mon abonnement copilot?"
+"quand commence l'oenologie vendredi?"
+"contenu de mes messages récents concernant biscarosse"
+"que dit le dernier message envoyé par pierre-antoine?"
+"quand est ma prochaine soirée avec pierre-antoine?"
+"retrouve le mail où paul me dit qu'il part en afrique"
+"de quand date mon dernier message avec rémi said?"
+"openai codex discontinued - link"
+"ton assistant doit gérer la pac au puy : nom du mec, trouver son email, lui envoyer une demande de devis, etc."
 
 # Milestone 2 pour bip email
 #### Misc
