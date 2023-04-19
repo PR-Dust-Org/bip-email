@@ -9,7 +9,7 @@ from bip.email.retriever import Retriever
 ASK_EMAIL_DUST_PARAMS = {
     "url": 'https://dust.tt/api/v1/apps/philipperolet/a2cf4c7458/runs',
     "specification_hash":
-    "5e8166b544e2059d9226969b72f9e1c1a11130158b2e2cc152418c4a62d97044",
+    "b907d9f6a5b481b65b173948f50b94087cffe9af2b3a33270c873fd251522c6f",
     "config": {
         "MODEL_1": {
             "provider_id": "openai",

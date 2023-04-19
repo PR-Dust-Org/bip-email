@@ -3,6 +3,7 @@
 {"question": "liste des plombiers du mail de françois pour la chaudière du puy", "expected": "guigon, lashermes, cortial"}
 {"question": "numéro de vol pour oslo", "expected": "Informations non disponibles"}
 {"question": "détails du vol pour oslo", "expected": "Informations non disponibles"}
+{"question": "article disant qu'openai is discontinued", "expected": "Pas d'informations trouvée dans les emails."}
 {"question": "prix de ma dernière course Uber?"}
 {"question": "montant de ma dernière course en taxi"}
 {"question": "détails sur guigon le plombier pour le puy"}
