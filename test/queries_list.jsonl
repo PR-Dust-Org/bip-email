@@ -4,9 +4,10 @@
 {"question": "numéro de vol pour oslo", "expected": "Informations non disponibles"}
 {"question": "détails du vol pour oslo", "expected": "Informations non disponibles"}
 {"question": "article disant qu'openai is discontinued", "expected": "Pas d'informations trouvée dans les emails."}
+{"question": "retrouve le mail où shokooh négocie un devis avec paris terrasse", "expected": "Mail du 15 avril 2023, à 17h23 (sujet: Re: Terrasse 25 rue du Moulin Joly - Paris 11). Dans ce message, Shokooh demande à Paris Terrasse de revoir la partie plantation du devis car elle la trouve trop chère et mentionne que dans le devis précédent, Paris Terrasse avait planté un choysia pour 75€."}
+
 {"question": "prix de ma dernière course Uber?"}
 {"question": "montant de ma dernière course en taxi"}
-{"question": "détails sur guigon le plombier pour le puy"}
 {"question": "numéro de vol pour lanzarote"}
 {"question": "détails du vol pour lanzarote"}
 {"question": "liste des outil de création de présentation dans Ben's Bites"}
@@ -19,3 +20,4 @@
 {"question": "quelle voiture ai-je réservée à vannes?"}
 {"question": "quand sont mes prochains meetups?"}
 {"question": "liste de mes meetups à venir"}
+{"question": "détails sur guigon le plombier pour le puy"}

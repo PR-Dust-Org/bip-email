@@ -1,7 +1,7 @@
 ## Todo now
 - Now
   + ajouter des logs infos pour voir le timing des trucs dans les logs
-  - gérer le cas où il n'y a pas d'information trouvée dans les emails (éviter si poss le last call)
+  + gérer le cas où il n'y a pas d'information trouvée dans les emails (éviter si poss le last call)
   - ajouter le test "retrouve le mail de shokooh..." qui marche
   - splitter les questions en différentes solutions à implémenter
   - mettre en place la màj auto des emails toutes les heures
@@ -24,27 +24,33 @@
 - doubler les api keys marcherait?
 
 ## queries
-- "quand est mon rdv avec stan cette semaine?"
-- "quand est mon entretien avec dust?"
-- "programme de mon évènement de ce soir stp"
-- "qui est xavier lottin?" => le LLM transforme mal la query car ajoute "et pourquoi est-il mentionné dans mes emails?"
-"Quand ai-je acheté le livre nos voisins silencieux?"
+"quand est mon entretien avec dust?"
+"programme de mon évènement de ce soir stp"
 "combien coûte mon abonnement copilot?"
-"quand commence l'oenologie vendredi?"
-"contenu de mes messages récents concernant biscarosse"
 
+**Thread summaries** => Les infos nécéssaires sont réparties dans un thread
+**Recency handling** => On fait référence au "dernier" ou au "premier" 
+- (regarder des valeurs de similarité, faire des stats dessus)
+**Similarity improvement** => Pinecone n'a pas remonté les bons emails
+**Attachment handling** => l'info se trouvait dans une PJ
 
-"retrouve le mail où shokooh négocie un devis avec paris terrasse"
-"de quand date mon dernier message avec rémi said?"
-
-### A- Géré par les thread summaries
+### A- Thread summaries
 "quand est ma prochaine soirée avec pierre-antoine?"
-### B- Géré par le last-first-date handling (regarder des valeurs de similarité, faire des stats dessus)
-"que dit le dernier message envoyé par pierre-antoine?"
-### C- Géré par la capacité de restitution de contenu
 
-### D- Géré par l'amélioration du score de similarité
+### B- Recency handling 
+"que dit le dernier message envoyé par pierre-antoine?"
+"de quand date mon dernier message avec rémi said?"
+"prix de ma dernière course uber"
+### C- Summary handling
+"messages récents concernant biscarosse"
+
+### D- Similarity improvement
 "lien vers l'article qui parle d'openai codex discontinued"
+"Quand ai-je acheté le livre nos voisins silencieux?"
+"quand est mon rdv avec dust cette semaine?"
+
+### E- Gestion des pièces jointes
+"quand commence le cours d'oenologie vendredi?"
 
 ## autres features
 - ton assistant doit gérer la pac au puy : nom du mec, trouver son email, lui envoyer une demande de devis, etc.
