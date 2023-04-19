@@ -1,6 +1,6 @@
 ## Todo now
 - Now
-  - ajouter des logs infos pour voir le timing des trucs dans les logs
+  + ajouter des logs infos pour voir le timing des trucs dans les logs
   - gérer le cas où il n'y a pas d'information trouvée dans les emails (éviter si poss le last call)
   - ajouter le test "retrouve le mail de shokooh..." qui marche
   - splitter les questions en différentes solutions à implémenter

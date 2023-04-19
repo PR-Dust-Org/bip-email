@@ -55,6 +55,7 @@ class BipAPI(object):
 
     @classmethod
     def _call_dust_api(cls, dust_params, dust_inputs):
+        logger.info('Calling Dust endpoint')
         # create the request headers and payload
         dust_key = get_secret("dust")
         # pop url from dust_params
@@ -69,6 +70,7 @@ class BipAPI(object):
             url,
             body=json.dumps(body).encode('utf-8'),
             headers=headers)
+        logger.info('Results received from Dust')
         return json.loads(response.data.decode('utf-8'))
 
     def _create_dust_inputs(self, questions):
