@@ -64,7 +64,9 @@ def get_message_text_from_payload(message_part):
     if 'data' in body:
         raw_data = base64.urlsafe_b64decode(body['data']).decode('utf-8')
         if message_part['mimeType'] == 'text/html':
-            result = html2text.html2text(raw_data)
+            h = html2text.HTML2Text()
+            h.ignore_links = True
+            result = h.handle(raw_data)
         elif message_part['mimeType'] == 'text/plain':
             result = raw_data
     parts = message_part.get('parts', [])
