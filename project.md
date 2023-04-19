@@ -1,13 +1,11 @@
 ## Todo now
-- logging
-  - ajouter un outil de création de logging dans log.py
-  - ajouter un logger dans config
-  - changer retriever, bip-email, bip-api pour utiliser ce logger
-- Créer une base de test queries que je peux refaire tourner facilement
-  - command-line "test-queries"
-  - 10 queries
-  - envoi à un LLM query, answer, expected_data_in_answer => qui renvoie Y/N
-  - calcul du score total et envoi du score + les failures avec le détail
+- Now
+  - ajouter des logs infos pour voir le timing des trucs dans les logs
+  - gérer le cas où il n'y a pas d'information trouvée dans les emails (éviter si poss le last call)
+  - ajouter le test "retrouve le mail de shokooh..." qui marche
+  - splitter les questions en différentes solutions à implémenter
+  - mettre en place la màj auto des emails toutes les heures
+
 - Expérimenter sur 4-5 emails le résumé de threads: on ne perd pas d'infos?
   - comment va-t-on générer le résumé?
   - 3 emails clefs sur 3 queries clefs : horaires train, mail françois?
@@ -17,6 +15,7 @@
   - possibilité d'avoir plusieurs bases donc
   - en metadata non indexée, full thread + résumé
 - Segmentation d'1 mois, test pour les queries concernées
+
 ## Idées chaudes
 - vitesse: limiter à 3 calls + supprimer le query call => gagner 5-10s?
 - enlever la passe dust gagnerait combien? probablement 1s max
@@ -33,13 +32,22 @@
 "combien coûte mon abonnement copilot?"
 "quand commence l'oenologie vendredi?"
 "contenu de mes messages récents concernant biscarosse"
-"que dit le dernier message envoyé par pierre-antoine?"
-"quand est ma prochaine soirée avec pierre-antoine?"
-"retrouve le mail où paul me dit qu'il part en afrique"
-"de quand date mon dernier message avec rémi said?"
-"openai codex discontinued - link"
-"ton assistant doit gérer la pac au puy : nom du mec, trouver son email, lui envoyer une demande de devis, etc."
 
+
+"retrouve le mail où shokooh négocie un devis avec paris terrasse"
+"de quand date mon dernier message avec rémi said?"
+
+### A- Géré par les thread summaries
+"quand est ma prochaine soirée avec pierre-antoine?"
+### B- Géré par le last-first-date handling (regarder des valeurs de similarité, faire des stats dessus)
+"que dit le dernier message envoyé par pierre-antoine?"
+### C- Géré par la capacité de restitution de contenu
+
+### D- Géré par l'amélioration du score de similarité
+"lien vers l'article qui parle d'openai codex discontinued"
+
+## autres features
+- ton assistant doit gérer la pac au puy : nom du mec, trouver son email, lui envoyer une demande de devis, etc.
 # Milestone 2 pour bip email
 #### Misc
 + regénération du token gmail

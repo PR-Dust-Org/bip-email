@@ -9,20 +9,16 @@ from bip.email.retriever import Retriever
 ASK_EMAIL_DUST_PARAMS = {
     "url": 'https://dust.tt/api/v1/apps/philipperolet/a2cf4c7458/runs',
     "specification_hash":
-    "250113fe7361a08f0108f2c2a27366e3e755fd80fc732838b2f9262ba0f0e355",
+    "5e8166b544e2059d9226969b72f9e1c1a11130158b2e2cc152418c4a62d97044",
     "config": {
-        "INTENT_QUESTION":
-        {"provider_id": "openai",
-         "model_id": "gpt-3.5-turbo",
-         "use_cache": True},
-        "MODEL_1":
-        {"provider_id": "openai",
-         "model_id": "gpt-3.5-turbo",
-         "use_cache": True},
-        "MODEL":
-        {"provider_id": "openai",
-         "model_id": "gpt-3.5-turbo",
-         "use_cache": True}},
+        "MODEL_1": {
+            "provider_id": "openai",
+            "model_id": "gpt-3.5-turbo",
+            "use_cache": True},
+        "MODEL": {
+            "provider_id": "openai",
+            "model_id": "gpt-3.5-turbo",
+            "use_cache": True}},
     "blocking": True}
 
 TEST_QUESTION_DUST_PARAMS = {
@@ -47,7 +43,7 @@ class BipAPI(object):
 
     def _get_relevant_email_chunks(self, question):
         result = (self._retriever
-                  .query(question, top_k=4, include_metadata=True)
+                  .query(question, top_k=3, include_metadata=True)
                   .get('matches'))
         return [result['metadata']['text'] for result in result]
 
