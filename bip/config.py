@@ -13,7 +13,7 @@ else:
                      .Table(os.getenv("SECRETS_TABLE_NAME")))
 
 # create logs directory if it doesn't exist
-if not os.path.exists("logs"):
-    os.mkdir("logs")
+# if not os.path.exists("logs"):
+#    os.mkdir("logs")
 
-logger = log.create_logger("bip-email", "logs/bip-email.log")
+logger = log.create_logger("bip-email")
