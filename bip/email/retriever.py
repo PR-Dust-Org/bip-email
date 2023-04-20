@@ -9,7 +9,7 @@ import pinecone
 
 from bip.email import gmail, chunker
 from bip.utils import get_secret, embed
-from bip.config import test_email, logger
+from bip.config import test_email, logger, emails_index
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -22,7 +22,7 @@ class Retriever(object):
         self._gmail_client = gmail.gmail_api_client(user_email)
         pinecone.init(api_key=get_secret("pinecone"),
                       environment="eu-west1-gcp")
-        self._index = pinecone.Index("bip-email")
+        self._index = pinecone.Index(emails_index)
         logger.info(f"Retriever initialized for {user_email} "
                     f"(namespace: {namespace})")
 

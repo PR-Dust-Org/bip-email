@@ -17,3 +17,4 @@ else:
 #    os.mkdir("logs")
 
 logger = log.create_logger("bip-email")
+emails_index = "emails"
