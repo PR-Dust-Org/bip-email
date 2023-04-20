@@ -9,16 +9,14 @@ from bip.email.retriever import Retriever
 ASK_EMAIL_DUST_PARAMS = {
     "url": 'https://dust.tt/api/v1/apps/philipperolet/a2cf4c7458/runs',
     "specification_hash":
-    "b907d9f6a5b481b65b173948f50b94087cffe9af2b3a33270c873fd251522c6f",
+    "551b13489bab3dbbd0b27e9f43bdc0bd165952e1ba0176a2d65656e4e17f5c84",
     "config": {
-        "MODEL_1": {
-            "provider_id": "openai",
-            "model_id": "gpt-3.5-turbo",
-            "use_cache": True},
-        "MODEL": {
-            "provider_id": "openai",
-            "model_id": "gpt-3.5-turbo",
-            "use_cache": True}},
+        "FINAL_ANALYSIS": {"provider_id": "openai",
+                           "model_id": "gpt-3.5-turbo",
+                           "use_cache": True},
+        "MODEL": {"provider_id": "openai",
+                  "model_id": "text-davinci-003",
+                  "use_cache": True}},
     "blocking": True}
 
 TEST_QUESTION_DUST_PARAMS = {
@@ -83,7 +81,7 @@ class BipAPI(object):
         def _parse_result(result):
             return re.split(r'Réponse\W*:\W?',
                             result[0]['value']['completion']['text'])[1]
-        return [_parse_result(result) for result in results]
+        return [result[0]['value']['answer'] for result in results]
 
     def batch_ask_emails(self, questions):
         dust_inputs = self._create_dust_inputs(questions)
