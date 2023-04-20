@@ -66,6 +66,7 @@ def get_message_text_from_payload(message_part):
         if message_part['mimeType'] == 'text/html':
             h = html2text.HTML2Text()
             h.ignore_links = True
+            h.ignore_images = True
             result = h.handle(raw_data)
         elif message_part['mimeType'] == 'text/plain':
             result = raw_data
