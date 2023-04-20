@@ -69,7 +69,8 @@ def cut_message(message):
     Cut the message in chunks, enrich them, create the metadata for each
     chunk and return the outcome
 
-    Documentation on Message object: https://developers.google.com/gmail/api/v1/reference/users/messages
+    Documentation on Message object:
+    https://developers.google.com/gmail/api/v1/reference/users/messages
 
     :param message: the message to cut
     :return: the enriched chunks and the chunks metadatas
@@ -81,14 +82,16 @@ def cut_message(message):
         return [], []
 
     # compute enriched chunks
-    def enrich_chunk(c,i):
+    def enrich_chunk(c, i):
         return _enrich_chunk(c, message, i, len(chunks))
     enriched_chunks = list(map(enrich_chunk, chunks, range(len(chunks))))
 
     # compute chunks metadatas
     def chunk_metadata(chunk, index):
         return _create_chunk_metadata(chunk, message, index)
-    chunks_metadatas = list(map(chunk_metadata, enriched_chunks, range(len(chunks))))
+    chunks_metadatas = list(map(chunk_metadata,
+                                enriched_chunks,
+                                range(len(chunks))))
 
     return enriched_chunks, chunks_metadatas
 
@@ -105,10 +108,10 @@ def chunk_id(message, chunk_index):
 
 
 def test_chunks():
-    gmail_api_client = gmail_api_client(test_email)
+    client = gmail_api_client(test_email)
 
     # Get last threads from gmail, store their content in a chroma database
-    for thread in get_last_threads(gmail_api_client, 3):
+    for thread in get_last_threads(client, 3):
         enriched_chunks, chunks_metadatas = cut_message(thread['messages'][0])
         print("Enriched chunks:" + str(len(enriched_chunks)))
         print("Chunks metadatas:" + str(len(chunks_metadatas)))
