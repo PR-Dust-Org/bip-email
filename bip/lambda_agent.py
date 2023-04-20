@@ -9,7 +9,7 @@ from bip.config import test_email
 bip_api = BipAPI(test_email)
 
 
-def respond200(infoMessage = "Request Handled"):
+def respond200(infoMessage="Request Handled"):
     return {
         "statusCode": 200,
         "body": json.dumps({"info": infoMessage})
@@ -39,7 +39,7 @@ def send_message_unhandled(userId, message):
         headers=headers)
 
 
-def send_message(userId,message):
+def send_message(userId, message):
     sendResponse = send_message_unhandled(userId, message)
     if sendResponse.status == 200:
         return respond200("Request handled successfully")
@@ -102,8 +102,8 @@ def user_message_notification(event):
     :param event: The request event
     :return: True if the request is a user message notification
     """
-    body = json.loads(event["body"])    
-    return body["entry"][0]["changes"][0]["value"]["messages"]
+    body = json.loads(event["body"])
+    return "messages" in body["entry"][0]["changes"][0]["value"]
 
 
 def handleRequest(event):
@@ -137,4 +137,3 @@ def handleRequest(event):
         answer = {"from": "bip", 
                   "text": "Je buggue. Toutes mes excuses."}
     return send_message(message["from"], answer["text"])
-    

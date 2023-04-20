@@ -85,7 +85,9 @@ class Retriever(object):
         """
         logger.info("Updating email index with emails "
                     f"between {start_date} and {end_date}")
-        batches = gmail.email_batches_by_dates(self._gmail_client, start_date, end_date)
+        batches = gmail.email_batches_by_dates(self._gmail_client,
+                                               start_date,
+                                               end_date)
         for email_batch in batches:
             if not self._already_fully_stored(email_batch):
                 self._store_email_batch(email_batch)
