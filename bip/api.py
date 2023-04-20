@@ -102,8 +102,10 @@ class BipAPI(object):
 
     def gen_test_data(self, questions_file):
         with open(questions_file, 'r') as f:
-            questions = [json.loads(line)['question'] for line in f]
-        print(json.dumps(self._create_dust_inputs(questions)))
+            questions = [json.loads(line)['question'] for line in f
+                         if 'expected' in json.loads(line)]
+        print("\n".join([json.dumps(x)
+                         for x in self._create_dust_inputs(questions)]))
 
     def test_questions(self, questions_file):
         print('Testing questions...')
