@@ -158,20 +158,16 @@ if __name__ == '__main__':
         print(message['snippet'])
 
 
-def email_batches(gmail_client, start_date, end_date, batch_size=100):
+def email_batches_by_query(gmail_client, query, batch_size=100):
     """Get emails between two dates and return them in batches via a generator.
 
     :param gmail_client: the gmail API client
-    :param start_date: the start date, inclusive
-    :param end_date: the end date, exclusive
+    :param query: the query to use
     :param batch_size: the batch size
     """
-    start_date = start_date.strftime('%Y/%m/%d')
-    end_date = end_date.strftime('%Y/%m/%d')
-
     # get the first batch of emails
     response = (gmail_client.users().messages()
-                .list(userId='me', q=f"after:{start_date} before:{end_date}")
+                .list(userId='me', q=query)
                 .execute())
     while True:
         message_heads = response['messages']
@@ -182,6 +178,21 @@ def email_batches(gmail_client, start_date, end_date, batch_size=100):
             break
         response = (gmail_client.users().messages()
                     .list(userId='me',
-                          q=f"after:{start_date} before:{end_date}",
+                          q=query,
                           pageToken=response['nextPageToken'])
                     .execute())
+
+
+def email_batches_by_dates(gmail_client, start_date, end_date, batch_size=100):
+    """Get emails between two dates and return them in batches via a generator.
+
+    :param gmail_client: the gmail API client
+    :param start_date: the start date, inclusive
+    :param end_date: the end date, exclusive
+    :param batch_size: the batch size
+    """
+    start_date = start_date.strftime('%Y/%m/%d')
+    end_date = end_date.strftime('%Y/%m/%d')
+    return email_batches_by_query(gmail_client,
+                                  f"after:{start_date} before:{end_date}",
+                                  batch_size)
