@@ -1,17 +1,20 @@
 # Test chunker
+import random
 import unittest
 
-from bip import chunker
+from bip.email import chunker
 
-from mock_gmail_message import mock_gmail_message
+from mock_gmail_message import mock_gmail_message, data
 
 
 class TestChunker(unittest.TestCase):
 
     def test_chunker(self):
-        enriched_chunks, _ = chunker.cut_message(mock_gmail_message)
-        shuffled_chunks = chunker.shuffle_chunks(enriched_chunks)
+        enriched_chunks, _ = chunker.cut_message(mock_gmail_message, 500)
+        # shuffle the list of chunks in random order
+        random.shuffle(enriched_chunks)
         print(enriched_chunks)
-        glued_back = chunker.glue_chunks(shuffled_chunks, keep_header=False)
-        self.assertEqual(glued_back,
-                         mock_gmail_message['payload']['body']['data'])
+        glued_back = chunker.glue_chunks(enriched_chunks,
+                                         keep_header=False,
+                                         delimiter="")
+        self.assertEqual(glued_back, data)

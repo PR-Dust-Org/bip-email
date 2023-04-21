@@ -2,6 +2,7 @@ import copy
 import re
 import urllib3
 import json
+from bip.email import chunker
 
 from bip.utils import get_secret
 from bip.config import logger
@@ -10,10 +11,10 @@ from bip.email.retriever import Retriever
 ASK_EMAIL_DUST_PARAMS = {
     "url": 'https://dust.tt/api/v1/apps/philipperolet/a2cf4c7458/runs',
     "specification_hash":
-    "551b13489bab3dbbd0b27e9f43bdc0bd165952e1ba0176a2d65656e4e17f5c84",
+    "b5611c7131d4a1b87ae783464c8273f552316871e2ef1f767eb6fb4263f6df0d",
     "config": {
         "FINAL_ANALYSIS": {"provider_id": "openai",
-                           "model_id": "gpt-3.5-turbo",
+                           "model_id": "text-davinci-003",
                            "use_cache": True},
         "MODEL": {"provider_id": "openai",
                   "model_id": "text-davinci-003",
@@ -40,11 +41,39 @@ class BipAPI(object):
     def __init__(self, user_email, retriever_namespace):
         self._retriever = Retriever(user_email, retriever_namespace)
 
-    def _get_relevant_email_chunks(self, question):
-        result = (self._retriever
-                  .query(question, top_k=3, include_metadata=True)
-                  .get('matches'))
-        return [result['metadata']['text'] for result in result]
+    def _get_texts_from_matching_data(self, vector_metadata,
+                                      max_texts=4,
+                                      texts_acc=[]):
+
+        if (len(texts_acc) >= max_texts or not vector_metadata):
+            return texts_acc
+
+        # get the first chunk and add all chunks with the same message id
+        message_chunks_id = vector_metadata[0]['metadata']['message_id']
+
+        def chunks_with_same_message_id(chunk):
+            return (chunk['metadata']['message_id'] == message_chunks_id)
+        message_chunks = list(filter(chunks_with_same_message_id,
+                                     vector_metadata))
+
+        # remove the chunks from the list
+        for chunk in message_chunks:
+            vector_metadata.remove(chunk)
+
+        # Glue the chunks
+        enriched_chunks = [chunk['metadata']['text']
+                           for chunk in message_chunks]
+        message_text = chunker.glue_chunks(enriched_chunks)
+
+        return self._get_texts_from_matching_data(vector_metadata,
+                                                  max_texts,
+                                                  texts_acc + [message_text])
+
+    def _get_relevant_texts(self, question):
+        matching_vectors = (self._retriever
+                            .query(question, top_k=32, include_metadata=True)
+                            .get('matches'))
+        return self._get_texts_from_matching_data(matching_vectors)
 
     def retrieve_emails(self, start_date, end_date, clear_vs):
         if clear_vs:
@@ -74,7 +103,7 @@ class BipAPI(object):
         return json.loads(response.data.decode('utf-8'))
 
     def _create_dust_inputs(self, questions):
-        relevant_email_chunks = [self._get_relevant_email_chunks(question)
+        relevant_email_chunks = [self._get_relevant_texts(question)
                                  for question in questions]
         return [{'texts': chunks, 'question': question}
                 for question, chunks in zip(questions, relevant_email_chunks)]
