@@ -17,7 +17,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 class Retriever(object):
     UPSERT_BATCH_SIZE = 100
 
-    def __init__(self, user_email, namespace=None):
+    def __init__(self, user_email, namespace):
         self._namespace = namespace
         self._gmail_client = gmail.gmail_api_client(user_email)
         pinecone.init(api_key=get_secret("pinecone"),
@@ -35,12 +35,11 @@ class Retriever(object):
         messages, we check for the first chunk of the first and last message,
         using the chunk_id function
         """
-        first_message = email_batch[0]
-        last_message = email_batch[-1]
-        first_chunk_id = chunker.chunk_id(first_message, 0)
-        last_chunk_id = chunker.chunk_id(last_message, 0)
-        return (self._index.fetch(ids=[first_chunk_id])['vectors']
-                and self._index.fetch(ids=[last_chunk_id])['vectors'])
+        first_id = chunker.chunk_id(email_batch[0], 0)
+        last_id = chunker.chunk_id(email_batch[-1], 0)
+
+        return (self._index.fetch([first_id], self._namespace)['vectors']
+                and self._index.fetch([last_id], self._namespace)['vectors'])
 
     def _store_chunks(self, chunks):
         for i in range(0, len(chunks), self.UPSERT_BATCH_SIZE):
@@ -100,11 +99,12 @@ class Retriever(object):
         """Query the index"""
         return self._index.query(
             vector=embed(query),
+            namespace=self._namespace,
             **kwargs)
 
 
 if __name__ == '__main__':
-    retriever = Retriever(test_email)
+    retriever = Retriever(test_email, 'test-namespace')
     script_start_date = datetime.strptime(sys.argv[1], "%Y-%m-%d")
     script_end_date = datetime.strptime(sys.argv[2], "%Y-%m-%d")
     retriever.update_email_index(script_start_date, script_end_date)

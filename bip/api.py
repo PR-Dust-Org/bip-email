@@ -37,8 +37,8 @@ class BipAPI(object):
 
     _http = urllib3.PoolManager()
 
-    def __init__(self, user_email):
-        self._retriever = Retriever(user_email)
+    def __init__(self, user_email, retriever_namespace):
+        self._retriever = Retriever(user_email, retriever_namespace)
 
     def _get_relevant_email_chunks(self, question):
         result = (self._retriever

@@ -18,3 +18,4 @@ else:
 
 logger = log.create_logger("bip-email")
 emails_index = "emails"
+retriever_namespace = "chunks1k"
