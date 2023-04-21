@@ -1,7 +1,8 @@
 import os.path
 import openai
+import tiktoken
 
-from bip.config import secrets_table
+from bip.config import secrets_table, logger
 
 secrets_dir = 'secrets'
 
@@ -40,9 +41,15 @@ def set_secret(key_name, value):
         )
 
 
-def embed(text):
+def embed(texts):
     """Embed a text using OpenAI's API"""
+    logger.info(
+        f"Embedding {len(texts) if isinstance(texts, list) else 1} text(s)")
     response = openai.Embedding.create(
-        input=text,
+        input=texts,
         model="text-embedding-ada-002")
-    return response['data'][0]['embedding']
+    return [x['embedding'] for x in response['data']]
+
+
+def count_tokens(text, model="text-davinci-003"):
+    return len(tiktoken.encoding_for_model(model).encode(text))

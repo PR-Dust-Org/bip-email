@@ -35,8 +35,8 @@ class Retriever(object):
         messages, we check for the first chunk of the first and last message,
         using the chunk_id function
         """
-        first_id = chunker.chunk_id(email_batch[0], 0)
-        last_id = chunker.chunk_id(email_batch[-1], 0)
+        first_id = chunker.chunk_id(email_batch[0]['id'], 0)
+        last_id = chunker.chunk_id(email_batch[-1]['id'], 0)
 
         return (self._index.fetch([first_id], self._namespace)['vectors']
                 and self._index.fetch([last_id], self._namespace)['vectors'])
@@ -51,16 +51,24 @@ class Retriever(object):
 
     def _cut_messages(self, email_batch):
         """Cut messages into chunks and embed them"""
-        chunks = []
+        enriched_chunks, metadatas, full_chunk_data = [], [], []
+        logger.info("Cutting messages")
         for i, message in enumerate(email_batch):
-            if i % 10 == 0:
-                logger.info(f"Cutting message {i} of {len(email_batch)}")
-            enriched_chunks, metadatas = chunker.cut_message(message)
-            chunk_vectors = [embed(chunk) for chunk in enriched_chunks]
-            for cv, m in zip(chunk_vectors, metadatas):
-                chunk_id = chunker.chunk_id(message, m['chunk_index'])
-                chunks.append((chunk_id, cv, m))
-        return chunks
+            ecs, ms = chunker.cut_message(message)
+            enriched_chunks += ecs
+            metadatas += ms
+
+        logger.info("Embedding chunks")
+        chunk_vector_batches = [embed(enriched_chunks[i:i + 512])
+                                for i in range(0, len(enriched_chunks), 512)]
+        chunk_vectors = [item
+                         for sublist in chunk_vector_batches
+                         for item in sublist]
+
+        for cv, m in zip(chunk_vectors, metadatas):
+            chunk_id = chunker.chunk_id(m['message_id'], m['chunk_index'])
+            full_chunk_data.append((chunk_id, cv, m))
+        return full_chunk_data
 
     def _get_batch_date(self, email_batch):
         """Get the date of the first message in the batch"""

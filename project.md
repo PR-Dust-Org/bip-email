@@ -1,31 +1,11 @@
 ## Todo now
-- Now
-  + ajouter des logs infos pour voir le timing des trucs dans les logs
-  + gérer le cas où il n'y a pas d'information trouvée dans les emails (éviter si poss le last call)
-  - ajouter le test "retrouve le mail de shokooh..." qui marche
-  - splitter les questions en différentes solutions à implémenter
-  - mettre en place la màj auto des emails toutes les heures
-
-- Expérimenter sur 4-5 emails le résumé de threads: on ne perd pas d'infos?
-  - comment va-t-on générer le résumé?
-  - 3 emails clefs sur 3 queries clefs : horaires train, mail françois?
-  - + 2 long threads (et imaginer des queries)
-  - script python pour les récupérer, les résumer et afficher le résumé
-- Code pour segmenter par threads dans le retriever
-  - possibilité d'avoir plusieurs bases donc
-  - en metadata non indexée, full thread + résumé
-- Segmentation d'1 mois, test pour les queries concernées
-
-## Idées chaudes
-- vitesse: limiter à 3 calls + supprimer le query call => gagner 5-10s?
-- enlever la passe dust gagnerait combien? probablement 1s max
-- enlever la couche whatsapp => 5 à 10s (aller / retour)
-- + possibilité de streamer => encore 10s
-- doubler les api keys marcherait?
+- ajouter la partie 
+- casser en 2
+- unit tester les 2 et le tout
+- bouger dans une classe à part
 
 ## queries
-"quand est mon entretien avec dust?"
-"programme de mon évènement de ce soir stp"
+
 "combien coûte mon abonnement copilot?"
 
 **Thread summaries** => Les infos nécéssaires sont réparties dans un thread
@@ -51,6 +31,26 @@
 
 ### E- Gestion des pièces jointes
 "quand commence le cours d'oenologie vendredi?"
+"programme de mon évènement de ce soir stp"
+
+# Backlog
+## Idées chaudes
+- vitesse: limiter à 3 calls + supprimer le query call => gagner 5-10s?
+- enlever la couche whatsapp => 5 à 10s (aller / retour)
+- + possibilité de streamer => encore 10s
+- doubler les api keys marcherait?
+
+- Expérimenter sur 4-5 emails le résumé de threads: on ne perd pas d'infos?
+  - comment va-t-on générer le résumé?
+  - 3 emails clefs sur 3 queries clefs : horaires train, mail françois?
+  - + 2 long threads (et imaginer des queries)
+  - script python pour les récupérer, les résumer et afficher le résumé
+- Code pour segmenter par threads dans le retriever
+  - possibilité d'avoir plusieurs bases donc
+  - en metadata non indexée, full thread + résumé
+- Segmentation d'1 mois, test pour les queries concernées
+
+
 
 ## autres features
 - ton assistant doit gérer la pac au puy : nom du mec, trouver son email, lui envoyer une demande de devis, etc.
