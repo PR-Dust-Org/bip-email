@@ -1,3 +1,4 @@
+import copy
 import re
 import urllib3
 import json
@@ -53,6 +54,7 @@ class BipAPI(object):
 
     @classmethod
     def _call_dust_api(cls, dust_params, dust_inputs):
+        dust_params = copy.deepcopy(dust_params)
         logger.info('Calling Dust endpoint')
         # create the request headers and payload
         dust_key = get_secret("dust")

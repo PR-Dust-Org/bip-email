@@ -63,8 +63,8 @@ def handle_verification_request(event):
     Handle the verification request
     :param event: The request event
     """
-    if (event['queryStringParameters']['hub.verify_token'] 
-        != 'BIP_VERIFICATION_TOKEN'):
+    if (event['queryStringParameters']['hub.verify_token']
+            != 'BIP_VERIFICATION_TOKEN'):
         return {
             'statusCode': 401,
             'body': 'Unauthorized'
@@ -75,7 +75,7 @@ def handle_verification_request(event):
 def parse_message_from_event(event):
     """Parse the message from the request event sent by the Graph API
     :param event: The request event as a JSON object
-    :return: The message object, with a field "text" containing the message 
+    :return: The message object, with a field "text" containing the message
     and a field "from" containing either "bip" or the user id
     """
     # catch error if one of the key is undefined
@@ -92,7 +92,9 @@ def parse_message_from_event(event):
 
 
 def message_too_old(message):
-    """Check if the hook notification is stale, that is, the user's message is more than 10 minutes old relatively to the current time
+    """Check if the hook notification is stale, that is, the user's message is
+    more than 10 minutes old relatively to the current time
+
     """
     return (time.time() - float(message["timestamp"])) > 600
 
@@ -128,12 +130,12 @@ def handleRequest(event):
             print("Processing user message: " + message["text"])
             send_message(message["from"], "Ok, je cherche...")
             query_answer = bip_api.ask_emails(message["text"])
-            answer = {"from": "bip", 
+            answer = {"from": "bip",
                       "text":  query_answer}
             print(answer)
     except Exception as e:
         print("Error processing user message")
         print(e)
-        answer = {"from": "bip", 
+        answer = {"from": "bip",
                   "text": "Je buggue. Toutes mes excuses."}
     return send_message(message["from"], answer["text"])
