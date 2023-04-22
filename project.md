@@ -1,8 +1,5 @@
 ## Todo now
-- ajouter la partie 
-- casser en 2
-- unit tester les 2 et le tout
-- bouger dans une classe à part
+- revenir à la distance euclidienne, et à des chunks de taille 2000? (ou dire direct de taille 512 tokens)
 
 ## queries
 
@@ -35,11 +32,19 @@
 
 # Backlog
 ## Idées chaudes
+### Code misc
+- il faut un mfing chrome ext pour caler une barre dans gmail
+- reactivate properly file logging
+- change chunk header separator with ENDMESSAGEHEADER to avoid misreads in emails
+- permettre de sortir un lien
+
+### speed
 - vitesse: limiter à 3 calls + supprimer le query call => gagner 5-10s?
 - enlever la couche whatsapp => 5 à 10s (aller / retour)
 - + possibilité de streamer => encore 10s
 - doubler les api keys marcherait?
 
+### on thread summaries
 - Expérimenter sur 4-5 emails le résumé de threads: on ne perd pas d'infos?
   - comment va-t-on générer le résumé?
   - 3 emails clefs sur 3 queries clefs : horaires train, mail françois?
