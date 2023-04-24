@@ -11,7 +11,7 @@ from bip.email.retriever import Retriever
 ASK_EMAIL_DUST_PARAMS = {
     "url": 'https://dust.tt/api/v1/apps/philipperolet/a2cf4c7458/runs',
     "specification_hash":
-    "b5611c7131d4a1b87ae783464c8273f552316871e2ef1f767eb6fb4263f6df0d",
+    "0434c19c6eb5bbc7cf4d8f666382148113a92df60366146c778bd4b8da966903",
     "config": {
         "FINAL_ANALYSIS": {"provider_id": "openai",
                            "model_id": "text-davinci-003",
@@ -63,7 +63,8 @@ class BipAPI(object):
         # Glue the chunks
         enriched_chunks = [chunk['metadata']['text']
                            for chunk in message_chunks]
-        message_text = chunker.glue_chunks(enriched_chunks)
+        metadatas = [chunk['metadata'] for chunk in message_chunks]
+        message_text = chunker.glue_chunks(enriched_chunks, metadatas)
 
         return self._get_texts_from_matching_data(vector_metadata,
                                                   max_texts,

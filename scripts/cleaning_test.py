@@ -17,9 +17,17 @@ def show_outputs(gmail_client, message_ids, query):
     # get the raw text
     chunks = retriever.Retriever(test_email, "chunks1k")._cut_messages(messages)
     query_vector = utils.embed(query)
+    # sort by similarity
+    chunks = sorted(chunks, key=lambda x: cosine_similarity(query_vector, x[1]), reverse=True)
     for _, v, m in chunks:
         score = cosine_similarity(query_vector, v)
-        text = m['text']
+        subject = m['subject']
+        index = m['chunk_index']
+        print(f"{score} - {subject} - {index}")
+        print(m['text'])
+
+    for _, v, m in chunks:
+        score = cosine_similarity(query_vector, v)
         subject = m['subject']
         index = m['chunk_index']
         print(f"{score} - {subject} - {index}")
@@ -31,4 +39,7 @@ if __name__ == "__main__":
     gens_conf_id = "1867a83210ef9e30"
     amazon_id = "18703a36a86f6fa4"
 
-    show_outputs(gmail_client, [bruyants_id, gens_conf_id, amazon_id], "achat du livre nos voisins silencieux")
+    show_outputs(gmail_client, [bruyants_id, gens_conf_id, amazon_id],
+                 "achat du livre nos voisins silencieux")
+                 # "mail d'amazon")
+                 

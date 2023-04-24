@@ -1,5 +1,29 @@
 ## Todo now
-- revenir à la distance euclidienne, et à des chunks de taille 2000? (ou dire direct de taille 512 tokens)
+
+- Maintenance & Bug fixes
+  - clean git
+  - double answer
+  - check all queries -- see which fail
+- pour avoir l'auth gmail
+  - retrieve avec son email => va faire l'auth flow
+	- tester avec la boite de shokooh
+  - on pourra alors faire tourner le cli sur cet email
+	- fournir l'email en argument de la cli
+  - puis uploader son token dans dynamodb (a mano)
+  - faire le lien entre son tel et son email
+	- TODO
+	- tester avec shokooh again : le whatsapp doit marcher
+- cron de récupération des mails
+  - recup toute la base
+  - pour chaque email
+	- cli.py --email retrieve last_3_days
+- monitoring
+  - prévenu quand il y a une search
+  - search auto sur 2 comptes toutes les heures (alarme si pb)
+- (OPT) extension chrome pour poser la question à l'email sur la boite gmail
+- (OPT) passage de la lambda à mieux (docker? ec2 classique)
+
+
 
 ## queries
 
@@ -18,6 +42,7 @@
 "que dit le dernier message envoyé par pierre-antoine?"
 "de quand date mon dernier message avec rémi said?"
 "prix de ma dernière course uber"
+
 ### C- Summary handling
 "messages récents concernant biscarosse"
 
@@ -37,6 +62,7 @@
 - reactivate properly file logging
 - change chunk header separator with ENDMESSAGEHEADER to avoid misreads in emails
 - permettre de sortir un lien
+- fix chunker test (overlap)
 
 ### speed
 - vitesse: limiter à 3 calls + supprimer le query call => gagner 5-10s?
