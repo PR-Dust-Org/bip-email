@@ -93,10 +93,10 @@ def parse_message_from_event(event):
 
 def message_too_old(message):
     """Check if the hook notification is stale, that is, the user's message is
-    more than 10 minutes old relatively to the current time
+    more than 20s old relatively to the current time
 
     """
-    return (time.time() - float(message["timestamp"])) > 600
+    return (time.time() - float(message["timestamp"])) > 20
 
 
 def user_message_notification(event):
