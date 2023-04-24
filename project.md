@@ -1,8 +1,8 @@
 ## Todo now
 
 - Maintenance & Bug fixes
-  - clean git
-  - double answer
+  + clean git
+  + double answer
   - check all queries -- see which fail
 - pour avoir l'auth gmail
   - retrieve avec son email => va faire l'auth flow
@@ -58,9 +58,7 @@
 # Backlog
 ## Idées chaudes
 ### Code misc
-- il faut un mfing chrome ext pour caler une barre dans gmail
 - reactivate properly file logging
-- change chunk header separator with ENDMESSAGEHEADER to avoid misreads in emails
 - permettre de sortir un lien
 - fix chunker test (overlap)
 

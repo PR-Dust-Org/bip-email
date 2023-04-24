@@ -78,6 +78,7 @@ def parse_arguments():
     # Add argument to the "test-questions" subcommand: questions_file
     parser_test_questions.add_argument(
         'questions_file',
+        default='tests/queries_list.jsonl',
         help='Path to the file containing the list of questions to ask, '
              'in JSONL format {"question": "question text",'
              '"expected": "expected answer"}')

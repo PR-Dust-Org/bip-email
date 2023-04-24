@@ -5,6 +5,10 @@
 {"question": "détails du vol pour oslo", "expected": "Informations non disponibles"}
 {"question": "article disant qu'openai is discontinued", "expected": "Pas d'informations trouvée dans les emails."}
 {"question": "retrouve le mail où shokooh négocie un devis avec paris terrasse", "expected": "Mail du 15 avril 2023, à 17h23 (sujet: Re: Terrasse 25 rue du Moulin Joly - Paris 11). Dans ce message, Shokooh demande à Paris Terrasse de revoir la partie plantation du devis car elle la trouve trop chère et mentionne que dans le devis précédent, Paris Terrasse avait planté un choysia pour 75€."}
+{"question": "Quand arrive le vol à Copenhague?", "expected": "Le 28 avril à 19h40"}
+{"question": "Montant de ma location de voiture à Vannes", "expected": "546€83"}
+{"question": "Liste des maisons à Montsouris proposées par belles demeures", "expected": "TODO"}
+{"question": "horaires de mon aller-retour pour aix", "expected": "Aller le 3 mai 2023, 12h33, retour le 7 mai 2023, 17h55"}
 {"question": "prix de ma dernière course Uber?"}
 {"question": "montant de ma dernière course en taxi"}
 {"question": "numéro de vol pour lanzarote"}
