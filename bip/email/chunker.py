@@ -19,12 +19,12 @@ def _create_chunk_metadata(chunk, message, chunk_index):
     subject = get_header_value(message['payload']['headers'], 'Subject')
     date = message['internalDate']
     metadata = {
-        'subject': subject,
+        'subject': subject if subject else "No subject",
         'message_id': message['id'],
         'date': date if date else "No date",
         'chunk_index': chunk_index,
         'thread_id': message['threadId'],
-        'source': subject,
+        'source': subject if subject else "No subject",
         'text': chunk,
     }
     return metadata
