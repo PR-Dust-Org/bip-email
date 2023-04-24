@@ -1,6 +1,7 @@
 # Module handling the connection with the gmail API
 import datetime
 import json
+import re
 import html2text
 import base64
 
@@ -57,6 +58,18 @@ def get_header_value(headers, name):
     return None
 
 
+def _clean(text):
+    """Clean the text of a message.
+    """
+    # Turn any URL into a special token
+    text = re.sub(r'http\S+', '<URL>', text)
+    # Any character repeated more than 3 times is replaced by 3 of them
+    text = re.sub(r'(.)\1{3,}', r'\1\1\1', text)
+    # Any two characters repeated more than 3 times is replaced by 2 of them
+    text = re.sub(r'(..)\1{3,}', r'\1\1', text)
+    return text
+
+
 def get_message_text_from_payload(message_part):
     """Get the message text from the message payload."""
     body = message_part['body']
@@ -70,6 +83,7 @@ def get_message_text_from_payload(message_part):
             result = h.handle(raw_data)
         elif message_part['mimeType'] == 'text/plain':
             result = raw_data
+    result = _clean(result)
     parts = message_part.get('parts', [])
     for part in parts:
         result += get_message_text_from_payload(part)
