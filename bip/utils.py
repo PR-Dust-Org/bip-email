@@ -53,3 +53,11 @@ def embed(texts):
 
 def count_tokens(text, model="text-davinci-003"):
     return len(tiktoken.encoding_for_model(model).encode(text))
+
+
+def tokenize(text, model="text-davinci-003"):
+    return tiktoken.encoding_for_model(model).encode(text)
+
+
+def detokenize(tokens, model="text-davinci-003"):
+    return tiktoken.encoding_for_model(model).decode(tokens)

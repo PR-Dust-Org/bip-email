@@ -54,22 +54,24 @@ def _enrich_chunk(chunk, message, index, total):
     return enriched_chunk
 
 
-def _create_chunks(message, chunk_size=1000):
+def _create_chunks(message, chunk_size):
     """Create chunks from the message.
 
     :param message: the message to chunk
+    :param chunk_size: the maximum size of the chunks in tokens
     :return: the chunks
     """
     message_text = get_message_text_from_payload(message['payload'])
+    message_tokens = utils.tokenize(message_text)
     chunks = []
     chunk_overlap = int(chunk_size / 8)
     chunk_step = chunk_size - chunk_overlap
-    for i in range(0, len(message_text), chunk_step):
-        chunks.append(message_text[i:i + chunk_step])
+    for i in range(0, len(message_tokens), chunk_step):
+        chunks.append(utils.detokenize(message_tokens[i:i + chunk_size]))
     return chunks
 
 
-def cut_message(message, chunk_size=1000):
+def cut_message(message, chunk_size=256):
     """
     Cut the message in chunks, enrich them, create the metadata for each
     chunk and return the outcome
