@@ -38,8 +38,8 @@ class BipAPI(object):
 
     _http = urllib3.PoolManager()
 
-    def __init__(self, user_email, retriever_namespace):
-        self._retriever = Retriever(user_email, retriever_namespace)
+    def __init__(self, user_email):
+        self._retriever = Retriever(user_email)
 
     def _get_texts_from_matching_data(self, vector_metadata,
                                       max_texts=4,
@@ -110,9 +110,6 @@ class BipAPI(object):
                 for question, chunks in zip(questions, relevant_email_chunks)]
 
     def _parse_dust_results(self, results):
-        def _parse_result(result):
-            return re.split(r'Réponse\W*:\W?',
-                            result[0]['value']['completion']['text'])[1]
         return [result[0]['value']['answer'] for result in results]
 
     def batch_ask_emails(self, questions):

@@ -5,7 +5,7 @@ import logging
 
 from datetime import datetime
 from bip.api import BipAPI
-from bip.config import test_email, logger, retriever_namespace
+from bip.config import test_email, logger
 
 
 def parse_arguments():
@@ -16,6 +16,12 @@ def parse_arguments():
         '--verbose',
         action='store_true',
         help='Print debug messages')
+    # add user-email argument
+    parser.add_argument(
+        '-e',
+        '--user-email',
+        default=test_email,
+        help='Email address of the user to retrieve emails from')
 
     # Create subparsers
     subparsers = parser.add_subparsers(dest='subcommand', help='Subcommands')
@@ -93,7 +99,7 @@ if __name__ == '__main__':
     else:
         logger.setLevel(logging.INFO)
     logger.info("Starting Bip Email CLI")
-    bipCli = BipAPI(test_email, retriever_namespace)
+    bipCli = BipAPI(args.user_email)
     if args.subcommand == 'retrieve':
         bipCli.retrieve_emails(args.start_date, args.end_date, args.clear_vs)
     elif args.subcommand == 'ask':

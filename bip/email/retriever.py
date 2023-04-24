@@ -17,14 +17,13 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 class Retriever(object):
     UPSERT_BATCH_SIZE = 100
 
-    def __init__(self, user_email, namespace):
-        self._namespace = namespace
+    def __init__(self, user_email):
+        self._namespace = user_email
         self._gmail_client = gmail.gmail_api_client(user_email)
         pinecone.init(api_key=get_secret("pinecone"),
                       environment="eu-west1-gcp")
         self._index = pinecone.Index(emails_index)
-        logger.info(f"Retriever initialized for {user_email} "
-                    f"(namespace: {namespace})")
+        logger.info(f"Retriever initialized for {user_email} ")
 
     def _already_fully_stored(self, email_batch):
         """Check if the email batch is already fully stored in the index.
