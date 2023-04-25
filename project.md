@@ -13,13 +13,14 @@
   - faire le lien entre son tel et son email
 	- ajouter la correspondance dans dynamodb
 	- tester avec shokooh again : le whatsapp doit marcher
++ (OPT) remove references to philippe in dust + use the right time (but maintain caching. you know)
 - monitoring
   - prévenu quand il y a une search
   - search auto sur 2 comptes toutes les heures (alarme si pb)
 
 
-- (OPT) remove references to philippe in dust + use the right time (but maintain caching. you know)
 
+-
 - (OPT) cron de récupération des mails
   - recup toute la base
   - pour chaque email
@@ -28,10 +29,34 @@
 - (OPT) extension chrome pour poser la question à l'email sur la boite gmail
 - (OPT) passage de la lambda à mieux (docker? ec2 classique)
 
+## User onboarding
+- Que lui raconter?
+  - Alors for now c'est assez basique - mais je vais améliorer le truc brutalement
+  - tu peux l'essayer right now mais ça va rater 2 fois sur 3; j'ai 3 - 4 fixes à faire pour que ça soit cool d'ici après-demain / vendredi
+  - hyper chaud pour que tu essaies nonobstant et donnes ton feedback
+  - Une question, il cherche, une réponse, en général moins de 15s - pas encore d'interaction
+  - il faut le voir comme une pers humaine qui ne te connais pas et qui cherche dans tes email
+	- e.g. si tu lui dis le mail de Filou => marche pas
+  - sur 1 an d'emails. Je peux pas les voir simplement - comme un mec qui bosse chez gmail peut pas voir simplement tes emails mais c'est techniquement possible
+	- si tu veux couper à tout moment, voilà comment tu peux faire
+  - Je vais rajouter une ext chrome pour que tu le fasse dans gmail
+
+- Todo soonish
+  - le hit rate bien sûr
+  - les pièces jointes
+  - le contenu d'un email, eg. "résumé du dernier mail de Jean-Noël sur la fête du 13 mai"
+  - mini-interaction e.g. JN c'est Jean-Noel Barrot
+
+
+- Onboarding
+  - ajouter son entrée dans USER_DATA
+  - retrieve avec son email => va faire l'auth flow
+  - test: faire tourner le cli sur cet email
+  - tester
 
 
 ## queries
-
+quand arrive notre vol de Copenhague à Paris? 
 "combien coûte mon abonnement copilot?"
 
 **Thread summaries** => Les infos nécéssaires sont réparties dans un thread
