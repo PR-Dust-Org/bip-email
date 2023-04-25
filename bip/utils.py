@@ -1,3 +1,5 @@
+from datetime import datetime
+import locale
 import os.path
 import openai
 import tiktoken
@@ -61,3 +63,9 @@ def tokenize(text, model="text-davinci-003"):
 
 def detokenize(tokens, model="text-davinci-003"):
     return tiktoken.encoding_for_model(model).decode(tokens)
+
+
+def french_date_from_timestamp(ts):
+    locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8')
+    utc_date = datetime.utcfromtimestamp(ts)
+    return utc_date.strftime('%A %d %B %Y')

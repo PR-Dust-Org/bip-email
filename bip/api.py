@@ -1,7 +1,8 @@
 import copy
-import re
+import time
 import urllib3
 import json
+from bip import utils
 from bip.email import chunker
 
 from bip.utils import get_secret
@@ -11,7 +12,7 @@ from bip.email.retriever import Retriever
 ASK_EMAIL_DUST_PARAMS = {
     "url": 'https://dust.tt/api/v1/apps/philipperolet/a2cf4c7458/runs',
     "specification_hash":
-    "0434c19c6eb5bbc7cf4d8f666382148113a92df60366146c778bd4b8da966903",
+    "8bfc3138c255a17c1b9e6af259a171dbb0c3cebafcc19af6297ca47e23b250cf",
     "config": {
         "FINAL_ANALYSIS": {"provider_id": "openai",
                            "model_id": "text-davinci-003",
@@ -33,6 +34,10 @@ TEST_QUESTION_DUST_PARAMS = {
     "blocking": True
 }
 
+EMAILS_TO_NAMES = {
+    "philipperolet@gmail.com": "Philippe Rolet",
+    "shokooh.ossareh@gmail.com": "Shokooh Ossareh"}
+
 
 class BipAPI(object):
 
@@ -40,6 +45,8 @@ class BipAPI(object):
 
     def __init__(self, user_email):
         self._retriever = Retriever(user_email)
+        self.context = {"user": EMAILS_TO_NAMES[user_email],
+                        "date": utils.french_date_from_timestamp(time.time())}
 
     def _get_texts_from_matching_data(self, vector_metadata,
                                       max_texts=4,
@@ -106,7 +113,9 @@ class BipAPI(object):
     def _create_dust_inputs(self, questions):
         relevant_email_chunks = [self._get_relevant_texts(question)
                                  for question in questions]
-        return [{'texts': chunks, 'question': question}
+        return [{'texts': chunks,
+                 'question': question,
+                 'context': self.context}
                 for question, chunks in zip(questions, relevant_email_chunks)]
 
     def _parse_dust_results(self, results):

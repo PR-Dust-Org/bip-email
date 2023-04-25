@@ -3,23 +3,28 @@
 - Maintenance & Bug fixes
   + clean git
   + double answer
-  - check all queries -- see which fail
+  + check all queries -- see which fail
 - pour avoir l'auth gmail
-  - retrieve avec son email => va faire l'auth flow
+  + retrieve avec son email => va faire l'auth flow
 	- tester avec la boite de shokooh
-  - on pourra alors faire tourner le cli sur cet email
+  + on pourra alors faire tourner le cli sur cet email
 	- fournir l'email en argument de la cli
-  - puis uploader son token dans dynamodb (a mano)
+  + puis uploader son token dans dynamodb (a mano)
   - faire le lien entre son tel et son email
-	- TODO
+	- ajouter la correspondance dans dynamodb
 	- tester avec shokooh again : le whatsapp doit marcher
-- cron de récupération des mails
-  - recup toute la base
-  - pour chaque email
-	- cli.py --email retrieve last_3_days
 - monitoring
   - prévenu quand il y a une search
   - search auto sur 2 comptes toutes les heures (alarme si pb)
+
+
+- (OPT) remove references to philippe in dust + use the right time (but maintain caching. you know)
+
+- (OPT) cron de récupération des mails
+  - recup toute la base
+  - pour chaque email
+	- cli.py --email retrieve last_3_days
+- (OPT) do the email/phone correspondence properly in dynamodb
 - (OPT) extension chrome pour poser la question à l'email sur la boite gmail
 - (OPT) passage de la lambda à mieux (docker? ec2 classique)
 

@@ -1,6 +1,4 @@
 import logging
-import locale
-from datetime import datetime
 
 from bip.email.gmail import get_message_text_from_payload, get_header_value, \
     get_last_threads, gmail_api_client
@@ -46,12 +44,8 @@ def _enrich_chunk(chunk, message, index, total):
     subject = get_header_value(message['payload']['headers'], 'Subject')
     sender = get_header_value(message['payload']['headers'], 'From')
     date = message['internalDate']
+    formatted_date = utils.french_date_from_timestamp(int(date) / 1000)
     recipients = get_header_value(message['payload']['headers'], 'To')
-
-    # Format date
-    locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8')
-    utc_date = datetime.utcfromtimestamp(int(date) / 1000)
-    formatted_date = utc_date.strftime('%A %d %B %Y')
 
     # Enrich chunk
     enriched_chunk = (f"Sujet: {subject}{CHUNK_HEADER_SEPARATOR}"
@@ -116,7 +110,7 @@ def glue_chunks(enriched_chunks,
                 max_tokens=3000,
                 delimiter="\n---\n"):
     """
-    Glue chunks together. 
+    Glue chunks together.
 
     Add `delimiter` between chunks.
 
