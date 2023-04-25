@@ -34,18 +34,6 @@ TEST_QUESTION_DUST_PARAMS = {
     "blocking": True
 }
 
-USER_DATA = {
-    "philipperolet@gmail.com": {
-        "name": "Philippe Rolet",
-        "phone": "33625857493"},
-    "shokooh.ossareh@gmail.com": {
-        "name": "Shokooh Ossareh",
-        "phone": "33619212499"},
-    "hbarrot@gmail.com": {
-        "name": "Hélène Barrot",
-        "phone": "33623042621"},
-    }
-
 
 class BipAPI(object):
 
