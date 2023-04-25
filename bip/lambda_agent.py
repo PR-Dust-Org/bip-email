@@ -2,9 +2,15 @@ import time
 import json
 import os
 import urllib3
-from bip import utils
 
-from bip.api import BipAPI
+from bip.api import BipAPI, USER_DATA
+
+
+def get_email_from_phone(phone):
+    for email, data in USER_DATA.items():
+        if data["phone"] == phone:
+            return email
+    return None
 
 
 def respond200(infoMessage="Request Handled"):
@@ -125,7 +131,7 @@ def handleRequest(event):
         if message["text"] == "ping":
             answer = {"from": "bip", "text": "pong"}
         else:
-            bip_api = BipAPI(utils.get_secret(message['from']))
+            bip_api = BipAPI(get_email_from_phone(message["from"]))
             print("Processing user message: " + message["text"])
             send_message(message["from"], "Ok, je cherche...")
             query_answer = bip_api.ask_emails(message["text"])

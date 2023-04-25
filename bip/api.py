@@ -34,9 +34,17 @@ TEST_QUESTION_DUST_PARAMS = {
     "blocking": True
 }
 
-EMAILS_TO_NAMES = {
-    "philipperolet@gmail.com": "Philippe Rolet",
-    "shokooh.ossareh@gmail.com": "Shokooh Ossareh"}
+USER_DATA = {
+    "philipperolet@gmail.com": {
+        "name": "Philippe Rolet",
+        "phone": "33625857493"},
+    "shokooh.ossareh@gmail.com": {
+        "name": "Shokooh Ossareh",
+        "phone": "33619212499"},
+    "hbarrot@gmail.com": {
+        "name": "Hélène Barrot",
+        "phone": "33623042621"},
+    }
 
 
 class BipAPI(object):
@@ -45,7 +53,7 @@ class BipAPI(object):
 
     def __init__(self, user_email):
         self._retriever = Retriever(user_email)
-        self.context = {"user": EMAILS_TO_NAMES[user_email],
+        self.context = {"user": USER_DATA[user_email]['name'],
                         "date": utils.french_date_from_timestamp(time.time())}
 
     def _get_texts_from_matching_data(self, vector_metadata,
