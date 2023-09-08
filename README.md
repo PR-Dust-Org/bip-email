@@ -1,4 +1,4 @@
-# bip-email
+# TEST REPO - forked - only for test purposes
 Talk to your email
 
 # Install
